@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chasquix_api
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=chasquix_db  # Corregido: debe coincidir con MYSQL_DATABASE
+      - DB_USERNAME=chasquix_user  # Corregido: debe coincidir con MYSQL_USER
+      - DB_PASSWORD=chasquix24
+    networks:
+      - chasquix_net
+    depends_on:
+      db:
+        condition: service_healthy  # Espera a que la DB esté lista
+
+  db:
+    image: mysql:8.0
+    container_name: chasquix_db
+    environment:
+      MYSQL_ROOT_PASSWORD: chasquix24
+      MYSQL_DATABASE: chasquix_db  # Corregido: era chasquix_db, ahora coincide
+      MYSQL_USER: chasquix_user
+      MYSQL_PASSWORD: chasquix24
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - chasquix_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pchasquix24"]  # Corregido: sin espacio después de -p
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s  # Añadido: tiempo inicial antes de empezar healthchecks
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    networks:
+      - chasquix_net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  mqtt:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt_broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"  # Para WebSockets
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data  # Corregido: usar volumen nombrado
+      - mosquitto_logs:/mosquitto/log   # Corregido: usar volumen nombrado
+    networks:
+      - chasquix_net
+    restart: unless-stopped
+
+networks:
+  chasquix_net:
+    driver: bridge
+
+volumes:
+  db_data:
+  mosquitto_data:  # Añadido: faltaba declarar estos volúmenes
+  mosquitto_logs:  # Añadido: faltaba de
