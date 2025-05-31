@@ -44,7 +44,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
+    container_name: chasqui_pma
     ports:
       - "8080:80"
     environment:
