@@ -1008,84 +1008,33 @@
         }
 
         // Inicializar MQTT
-      function initMQTT() {
-    // Configuración mejorada de conexión WSS
-    const clientId = currentUser.id || 'webclient_' + Math.random().toString(16).substr(2, 8);
-    const path = '/mqtt'; // Ruta común para brokers MQTT sobre WebSocket
-    const wsUri = `wss://${MQTT_CONFIG.host}:${MQTT_CONFIG.port}${path}`;
+        function initMQTT() {
+            mqttClient = new Paho.MQTT.Client(MQTT_CONFIG.host, MQTT_CONFIG.port, currentUser.id);
 
-    console.log(`Intentando conexión MQTT a: ${wsUri}`);
+            mqttClient.onConnectionLost = function (response) {
+                console.log('Conexión MQTT perdida:', response);
+                updateConnectionStatus(false);
+                setTimeout(initMQTT, 5000); // Reintentar conexión
+            };
 
-    // Crear cliente MQTT con configuración WSS
-    mqttClient = new Paho.MQTT.Client(MQTT_CONFIG.host, MQTT_CONFIG.port, path, clientId);
+            mqttClient.onMessageArrived = function (message) {
+                handleMQTTMessage(message);
+            };
 
-    // Configurar manejadores de eventos
-    mqttClient.onConnectionLost = function(response) {
-        if (response.errorCode !== 0) {
-            console.error('Conexión MQTT perdida:', response.errorMessage, 'Código:', response.errorCode);
+            // Conectar al broker MQTT
+            mqttClient.connect({
+                onSuccess: function () {
+                    console.log('Conectado a MQTT');
+                    updateConnectionStatus(true);
+                    subscribeToTopics();
+                },
+                onFailure: function (error) {
+                    console.error('Error conectando a MQTT:', error);
+                    updateConnectionStatus(false);
+                    setTimeout(initMQTT, 5000); // Reintentar
+                }
+            });
         }
-        updateConnectionStatus(false);
-
-        // Reintento exponencial para evitar saturación
-        const delay = Math.min(30000, 5000 * Math.pow(2, reconnectAttempts));
-        console.log(`Reintentando conexión en ${delay/1000} segundos...`);
-        setTimeout(initMQTT, delay);
-        reconnectAttempts++;
-    };
-
-    mqttClient.onMessageArrived = function(message) {
-        try {
-            console.debug('Mensaje recibido:', message.destinationName, message.payloadString);
-            handleMQTTMessage(message);
-        } catch (e) {
-            console.error('Error procesando mensaje MQTT:', e);
-        }
-    };
-
-    // Opciones de conexión mejoradas
-    const connectOptions = {
-        timeout: 10, // Tiempo de espera en segundos
-        keepAliveInterval: 60, // Intervalo de keep-alive
-        cleanSession: true,
-        useSSL: true, // Habilitar SSL para WSS
-        onSuccess: function() {
-            console.log('Conexión MQTT establecida con éxito');
-            updateConnectionStatus(true);
-            reconnectAttempts = 0;
-            subscribeToTopics();
-
-            // Enviar mensaje de presencia
-            const presenceMsg = new Paho.MQTT.Message(JSON.stringify({
-                userId: currentUser.id,
-                status: 'online',
-                timestamp: new Date().toISOString()
-            }));
-            presenceMsg.destinationName = MQTT_CONFIG.topics.presence;
-            mqttClient.send(presenceMsg);
-        },
-        onFailure: function(error) {
-            console.error('Error en conexión MQTT:', error.errorMessage, 'Código:', error.errorCode);
-            updateConnectionStatus(false);
-
-            // Reintento con backoff exponencial
-            const delay = Math.min(30000, 5000 * Math.pow(2, reconnectAttempts));
-            console.log(`Reintentando conexión en ${delay/1000} segundos...`);
-            setTimeout(initMQTT, delay);
-            reconnectAttempts++;
-        },
-        // Agregar credenciales si es necesario
-        // userName: 'tu_usuario',
-        // password: 'tu_contraseña'
-    };
-
-    // Intentar conectar
-    try {
-        mqttClient.connect(connectOptions);
-    } catch (e) {
-        console.error('Error al iniciar conexión MQTT:', e);
-        setTimeout(initMQTT, 5000);
-    }
-}
 
         // Suscribirse a los topics MQTT
         function subscribeToTopics() {
