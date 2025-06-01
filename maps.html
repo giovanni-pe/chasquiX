@@ -654,98 +654,107 @@
         }
 
         /* FABs (Floating Action Buttons) */
-       /* Estilos FAB simplificados */
-.fab-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 999;
-}
+        /* Estilos FAB simplificados */
+        .fab-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+        }
 
-.fab-main {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    cursor: pointer;
-    font-size: 24px;
-    z-index: 1000;
-}
+        .fab-main {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 1000;
+        }
 
-.fab-secondary-container {
-    position: absolute;
-    bottom: 70px;
-    right: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 15px;
-}
+        .fab-secondary-container {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 15px;
+        }
 
-.fab-group {
-    display: none;
-    flex-direction: column;
-    gap: 15px;
-}
+        .fab-group {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-.fab-group.active {
-    display: flex;
-}
+        .fab-group.active {
+            display: flex;
+        }
 
-.fab-with-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        .fab-with-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.fab-secondary {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #6c757d;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-    cursor: pointer;
-    font-size: 20px;
-}
+        .fab-secondary {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #6c757d;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            font-size: 20px;
+        }
 
-.fab-secondary.success { background: #28a745; }
-.fab-secondary.danger { background: #dc3545; }
-.fab-secondary.info { background: #17a2b8; }
+        .fab-secondary.success {
+            background: #28a745;
+        }
 
-.fab-label {
-    font-size: 12px;
-    color: white;
-    background: rgba(0,0,0,0.7);
-    padding: 2px 8px;
-    border-radius: 10px;
-    margin-top: 5px;
-    text-align: center;
-}
+        .fab-secondary.danger {
+            background: #dc3545;
+        }
 
-.chat-indicator {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #dc3545;
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: bold;
-}
+        .fab-secondary.info {
+            background: #17a2b8;
+        }
+
+        .fab-label {
+            font-size: 12px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .chat-indicator {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
         /* Panel toggle */
         .panel-toggle {
             position: fixed;
@@ -789,8 +798,8 @@
                 right: 20px;
             }
         }
-        /* Estilos para FABs con etiquetas */
 
+        /* Estilos para FABs con etiquetas */
     </style>
 </head>
 
@@ -886,56 +895,56 @@
         </div>
     </div>
 
- <!-- FABs (Floating Action Buttons) -->
-<!-- FAB Container -->
-<div class="fab-container" id="fabContainer">
-    <!-- FAB Principal (siempre visible) -->
-    <div class="fab-main" id="fabMain">
-        <i class="fas fa-taxi" id="fabMainIcon"></i>
+    <!-- FABs (Floating Action Buttons) -->
+    <!-- FAB Container -->
+    <div class="fab-container" id="fabContainer">
+        <!-- FAB Principal (siempre visible) -->
+        <div class="fab-main" id="fabMain">
+            <i class="fas fa-taxi" id="fabMainIcon"></i>
+        </div>
+
+        <!-- FABs Secundarios (aparecen según estado) -->
+        <div class="fab-secondary-container">
+            <!-- Solo se mostrará uno de estos grupos a la vez -->
+
+            <!-- Grupo 1: Modo Espera (Cliente) -->
+            <div class="fab-group" id="waitingGroup">
+                <div class="fab-with-label" id="fabDestination">
+                    <div class="fab-secondary">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <span class="fab-label">Destino</span>
+                </div>
+            </div>
+
+            <!-- Grupo 2: Modo Ruta (Cliente) -->
+            <div class="fab-group" id="routeGroup">
+                <div class="fab-with-label" id="fabConfirm">
+                    <div class="fab-secondary success">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="fab-label">Confirmar</span>
+                </div>
+            </div>
+
+            <!-- Grupo 3: Modo Activo (Todos) -->
+            <div class="fab-group" id="activeGroup">
+                <div class="fab-with-label" id="fabCancel">
+                    <div class="fab-secondary danger">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <span class="fab-label">Cancelar</span>
+                </div>
+                <div class="fab-with-label" id="fabChat">
+                    <div class="fab-secondary info">
+                        <i class="fas fa-comment"></i>
+                        <span id="unreadIndicator" class="chat-indicator">0</span>
+                    </div>
+                    <span class="fab-label">Chat</span>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- FABs Secundarios (aparecen según estado) -->
-    <div class="fab-secondary-container">
-        <!-- Solo se mostrará uno de estos grupos a la vez -->
-
-        <!-- Grupo 1: Modo Espera (Cliente) -->
-        <div class="fab-group" id="waitingGroup">
-            <div class="fab-with-label" id="fabDestination">
-                <div class="fab-secondary">
-                    <i class="fas fa-map-marker-alt"></i>
-                </div>
-                <span class="fab-label">Destino</span>
-            </div>
-        </div>
-
-        <!-- Grupo 2: Modo Ruta (Cliente) -->
-        <div class="fab-group" id="routeGroup">
-            <div class="fab-with-label" id="fabConfirm">
-                <div class="fab-secondary success">
-                    <i class="fas fa-check"></i>
-                </div>
-                <span class="fab-label">Confirmar</span>
-            </div>
-        </div>
-
-        <!-- Grupo 3: Modo Activo (Todos) -->
-        <div class="fab-group" id="activeGroup">
-            <div class="fab-with-label" id="fabCancel">
-                <div class="fab-secondary danger">
-                    <i class="fas fa-times"></i>
-                </div>
-                <span class="fab-label">Cancelar</span>
-            </div>
-            <div class="fab-with-label" id="fabChat">
-                <div class="fab-secondary info">
-                    <i class="fas fa-comment"></i>
-                    <span id="unreadIndicator" class="chat-indicator">0</span>
-                </div>
-                <span class="fab-label">Chat</span>
-            </div>
-        </div>
-    </div>
-</div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
@@ -943,8 +952,8 @@
     <script>
         // Configuración global
         const MQTT_CONFIG = {
-            host: '34.44.79.13',
-            port: 9001,
+            host: 'mqttv2.smartpx.org',
+            port: 443,
             topics: {
                 clients: 'chasquix/clients',
                 drivers: 'chasquix/drivers',
@@ -1008,32 +1017,74 @@
 
         // Inicializar MQTT
         function initMQTT() {
-            mqttClient = new Paho.MQTT.Client(MQTT_CONFIG.host, MQTT_CONFIG.port, currentUser.id);
+            // Configuración mejorada para WSS
+            const clientId = currentUser.id || 'webclient_' + Math.random().toString(16).substr(2, 8);
+            const path = ''; // Ruta vacía (Mosquitto no usa /mqtt)
+            const timeout = 10; // Tiempo de espera en segundos
 
+            console.log(`Intentando conexión MQTT a: wss://${MQTT_CONFIG.host}:${MQTT_CONFIG.port}${path}`);
+
+            mqttClient = new Paho.MQTT.Client(
+                MQTT_CONFIG.host,
+                MQTT_CONFIG.port,
+                path,
+                clientId
+            );
+
+            // Manejadores de eventos mejorados
             mqttClient.onConnectionLost = function (response) {
-                console.log('Conexión MQTT perdida:', response);
+                console.error('Conexión MQTT perdida. Código:', response.errorCode, 'Razón:', response.errorMessage);
                 updateConnectionStatus(false);
-                setTimeout(initMQTT, 5000); // Reintentar conexión
+
+                // Reintento con backoff exponencial
+                const delay = Math.min(30000, 5000 * Math.pow(2, reconnectAttempts));
+                console.log(`Reintentando en ${delay / 1000} segundos...`);
+                setTimeout(initMQTT, delay);
+                reconnectAttempts++;
             };
 
             mqttClient.onMessageArrived = function (message) {
-                handleMQTTMessage(message);
+                try {
+                    console.debug('Mensaje recibido:', message.destinationName, message.payloadString);
+                    handleMQTTMessage(message);
+                } catch (e) {
+                    console.error('Error procesando mensaje:', e);
+                }
             };
 
-            // Conectar al broker MQTT
-            mqttClient.connect({
+            // Opciones de conexión mejoradas
+            const connectOptions = {
+                timeout: timeout,
+                keepAliveInterval: 60,
+                cleanSession: true,
+                useSSL: true, // Obligatorio para WSS
                 onSuccess: function () {
-                    console.log('Conectado a MQTT');
+                    console.log('Conexión MQTT establecida con éxito');
                     updateConnectionStatus(true);
+                    reconnectAttempts = 0;
                     subscribeToTopics();
                 },
                 onFailure: function (error) {
-                    console.error('Error conectando a MQTT:', error);
+                    console.error('Error de conexión. Código:', error.errorCode, 'Error:', error.errorMessage);
                     updateConnectionStatus(false);
-                    setTimeout(initMQTT, 5000); // Reintentar
-                }
-            });
+
+                    const delay = Math.min(30000, 5000 * Math.pow(2, reconnectAttempts));
+                    setTimeout(initMQTT, delay);
+                    reconnectAttempts++;
+                },
+
+            };
+
+            try {
+                mqttClient.connect(connectOptions);
+            } catch (e) {
+                console.error('Excepción al conectar:', e);
+                setTimeout(initMQTT, 5000);
+            }
         }
+
+        // Variable para control de reintentos
+        let reconnectAttempts = 0;
 
         // Suscribirse a los topics MQTT
         function subscribeToTopics() {
@@ -1319,12 +1370,12 @@
             });
 
             // Panel toggle
-            document.getElementById('panelToggle').addEventListener('click', function() {
+            document.getElementById('panelToggle').addEventListener('click', function () {
                 document.getElementById('sidebar').classList.toggle('active');
             });
 
             // FAB Main button
-            document.getElementById('fabMain').addEventListener('click', function() {
+            document.getElementById('fabMain').addEventListener('click', function () {
                 if (fabMenuOpen) {
                     toggleFABMenu();
                 } else {
@@ -1372,48 +1423,48 @@
         }
 
         // Actualizar FABs según estado
-         function updateFABs() {
-    // Ocultar todos los grupos primero
-    document.querySelectorAll('.fab-group').forEach(group => {
-        group.classList.remove('active');
-    });
+        function updateFABs() {
+            // Ocultar todos los grupos primero
+            document.querySelectorAll('.fab-group').forEach(group => {
+                group.classList.remove('active');
+            });
 
-    // Mostrar solo el grupo necesario
-    if (currentUser.type === 'client') {
-        if (!currentUser.lat) {
-            // Esperando ubicación
-            document.getElementById('fabMainIcon').className = 'fas fa-location-arrow';
-        }
-        else if (!destinationCoords && !currentRequest) {
-            // Esperando destino
-            document.getElementById('waitingGroup').classList.add('active');
-            document.getElementById('fabMainIcon').className = 'fas fa-map-marker-alt';
-        }
-        else if (destinationCoords && !currentRequest) {
-            // Ruta lista para confirmar
-            document.getElementById('routeGroup').classList.add('active');
-            document.getElementById('fabMainIcon').className = 'fas fa-paper-plane';
-        }
-        else {
-            // Viaje activo
-            document.getElementById('activeGroup').classList.add('active');
-            document.getElementById('fabMainIcon').className = 'fas fa-car-side';
-        }
-    }
-    else { // Driver
-        if (currentUser.status === 'available' || currentUser.status === 'in_trip') {
-            document.getElementById('activeGroup').classList.add('active');
-        }
-        document.getElementById('fabMainIcon').className =
-            currentUser.status === 'available' ? 'fas fa-bell' : 'fas fa-motorcycle';
-    }
+            // Mostrar solo el grupo necesario
+            if (currentUser.type === 'client') {
+                if (!currentUser.lat) {
+                    // Esperando ubicación
+                    document.getElementById('fabMainIcon').className = 'fas fa-location-arrow';
+                }
+                else if (!destinationCoords && !currentRequest) {
+                    // Esperando destino
+                    document.getElementById('waitingGroup').classList.add('active');
+                    document.getElementById('fabMainIcon').className = 'fas fa-map-marker-alt';
+                }
+                else if (destinationCoords && !currentRequest) {
+                    // Ruta lista para confirmar
+                    document.getElementById('routeGroup').classList.add('active');
+                    document.getElementById('fabMainIcon').className = 'fas fa-paper-plane';
+                }
+                else {
+                    // Viaje activo
+                    document.getElementById('activeGroup').classList.add('active');
+                    document.getElementById('fabMainIcon').className = 'fas fa-car-side';
+                }
+            }
+            else { // Driver
+                if (currentUser.status === 'available' || currentUser.status === 'in_trip') {
+                    document.getElementById('activeGroup').classList.add('active');
+                }
+                document.getElementById('fabMainIcon').className =
+                    currentUser.status === 'available' ? 'fas fa-bell' : 'fas fa-motorcycle';
+            }
 
-    // Mostrar indicador de chat si hay mensajes
-    document.getElementById('unreadIndicator').style.display =
-        unreadMessages > 0 ? 'flex' : 'none';
-    document.getElementById('unreadIndicator').textContent =
-        unreadMessages > 9 ? '9+' : unreadMessages;
-}
+            // Mostrar indicador de chat si hay mensajes
+            document.getElementById('unreadIndicator').style.display =
+                unreadMessages > 0 ? 'flex' : 'none';
+            document.getElementById('unreadIndicator').textContent =
+                unreadMessages > 9 ? '9+' : unreadMessages;
+        }
         // Obtener ubicación del usuario
         function getUserLocation() {
             if (navigator.geolocation) {
@@ -1883,8 +1934,8 @@
         <p><strong>Hora:</strong> ${new Date(data.timestamp).toLocaleTimeString()}</p>
 `;
 
-if (type === 'client') {
-    popupContent += `
+            if (type === 'client') {
+                popupContent += `
         ${data.destination ? `<p><strong>Destino:</strong> ${data.destination}</p>` : ''}
         ${data.description ? `<p><strong>Detalles:</strong> ${data.description}</p>` : ''}
         <div style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
@@ -1896,18 +1947,18 @@ if (type === 'client') {
                 style="background: #17a2b8; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
                 💬 Chatear
             </button>
-           }
+
         </div>
     `;
-} else if (type === 'driver') {
-    // Contenido para conductores (mantener el existente)
-    popupContent += `
+            } else if (type === 'driver') {
+                // Contenido para conductores (mantener el existente)
+                popupContent += `
         ${data.description ? `<p><strong>Descripción:</strong> ${data.description}</p>` : ''}
         ${data.price ? `<p><strong>Precio:</strong> S/ ${data.price}</p>` : ''}
     `;
-}
+            }
 
-popupContent += '</div>';
+            popupContent += '</div>';
             if (type === 'client' && data.destination) {
                 popupContent += `<p><strong>Destino:</strong> ${data.destination}</p>`;
             }
