@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        * {
+       * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -21,6 +21,10 @@
             color: #333;
             height: 100vh;
             overflow: hidden;
+            /* Ajustar padding superior para compensar la barra de estado */
+            padding-top: 25px;
+            /* Alternativa: usar safe-area para dispositivos modernos */
+            padding-top: env(safe-area-inset-top, 25px);
         }
 
         .container {
@@ -43,6 +47,7 @@
             transform: translateY(100%);
             transition: transform 0.3s ease;
             z-index: 1000;
+                    padding-top: 25px;
         }
 
         .sidebar.active {
