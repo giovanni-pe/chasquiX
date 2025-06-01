@@ -3,44 +3,28 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChasquiX - Sistema de Taxi Móvil</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-            -webkit-overflow-scrolling: touch;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
-            touch-action: manipulation;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .container {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            height: 100dvh; /* Para compatibilidad con WebView */
-            position: relative;
-            overflow: hidden;
         }
 
         .sidebar {
@@ -49,17 +33,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: env(safe-area-inset-top, 20px) 15px 15px 15px;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
             transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transition: transform 0.3s ease;
             z-index: 1000;
-            will-change: transform;
         }
 
         .sidebar.active {
@@ -71,249 +52,165 @@
             position: relative;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            background: #f0f0f0;
-        }
-
-        .map-wrapper {
-            position: absolute;
-            top: 60px; /* Espacio para evitar conflicto con gestos del sistema */
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: white;
-            border-radius: 0;
-            overflow: hidden;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         #map {
             height: 100%;
             width: 100%;
-            position: relative;
-            background: #e6f3ff;
-            border: none;
-            outline: none;
-        }
-
-        /* Prevenir conflictos con gestos del sistema */
-        .map-safe-zone {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: linear-gradient(180deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
-            pointer-events: none;
-            z-index: 100;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 20px;
-            padding: 10px 0;
+            margin-bottom: 15px;
         }
 
         .header h1 {
             color: #764ba2;
-            font-size: 24px;
-            margin-bottom: 8px;
-            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 5px;
         }
 
         .header p {
             color: #666;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 12px;
         }
 
         .user-type {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .user-type label {
             display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
+            margin-bottom: 8px;
+            font-weight: bold;
             color: #333;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .user-type select {
             width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            font-size: 16px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
             background: white;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 12px center;
-            background-repeat: no-repeat;
-            background-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .user-type select:focus {
-            outline: none;
-            border-color: #764ba2;
-            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
         }
 
         .user-info {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
             border-left: 4px solid #764ba2;
-            font-size: 14px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-size: 13px;
         }
 
         .connection-status {
-            padding: 12px 16px;
-            border-radius: 8px;
+            padding: 8px;
+            border-radius: 5px;
             text-align: center;
-            margin-bottom: 16px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            margin-bottom: 12px;
+            font-weight: bold;
+            font-size: 13px;
         }
 
         .connected {
             background: #d4edda;
             color: #155724;
-            border: 1px solid #c3e6cb;
         }
 
         .disconnected {
             background: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
         }
 
         .request-form {
             background: white;
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e1e5e9;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .request-form h3 {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             color: #764ba2;
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 16px;
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            color: #374151;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 13px;
         }
 
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            background: #fafbfc;
-            transition: all 0.2s ease;
-            resize: none;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #764ba2;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 16px 20px;
-            border-radius: 12px;
+            padding: 10px 15px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 14px;
             width: 100%;
-            transition: all 0.2s ease;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
-            min-height: 48px; /* Para mejor accesibilidad táctil */
+            transition: transform 0.2s;
+            margin-bottom: 8px;
         }
 
-        .btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 8px rgba(118, 75, 162, 0.4);
+        .btn:hover {
+            transform: translateY(-2px);
         }
 
         .btn:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+            background: #6c757d;
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            background: #dc3545;
         }
 
         .active-requests {
             background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            max-height: 300px;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+            max-height: 200px;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e1e5e9;
-        }
-
-        .active-requests h3 {
-            margin-bottom: 16px;
-            color: #764ba2;
-            font-size: 16px;
-            font-weight: 700;
         }
 
         .request-item {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 16px;
-            margin-bottom: 12px;
-            border-radius: 12px;
+            background: #f8f9fa;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 8px;
             border-left: 4px solid #28a745;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            font-size: 12px;
         }
 
-        .request-item:active {
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        .request-item:hover {
+            transform: translateX(5px);
         }
 
         .request-item.driver {
@@ -321,110 +218,90 @@
         }
 
         .request-item h4 {
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             color: #333;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 13px;
         }
 
         .request-item p {
-            margin: 4px 0;
+            margin: 2px 0;
             color: #666;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-
-        .accept-btn, .cancel-btn, .contact-btn {
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
-            margin-right: 8px;
-            min-height: 36px;
-            transition: all 0.2s ease;
+            font-size: 11px;
         }
 
         .accept-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: #28a745;
             color: white;
-            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-top: 4px;
         }
 
         .cancel-btn {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            background: #dc3545;
             color: white;
-            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
-        }
-
-        .contact-btn {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-            color: white;
-            box-shadow: 0 2px 6px rgba(23, 162, 184, 0.3);
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-top: 4px;
+            margin-left: 4px;
         }
 
         .coordinates {
-            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-            padding: 16px;
-            border-radius: 12px;
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-            font-size: 12px;
-            margin-top: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e1e5e9;
+            background: #e9ecef;
+            padding: 8px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 11px;
+            margin-top: 8px;
         }
 
         .destination-selector {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            border: 2px dashed #2196f3;
+            background: #f0f8ff;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 2px dashed #007bff;
             text-align: center;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
+            font-size: 13px;
         }
 
         .destination-selector.active {
-            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            background: #e3f2fd;
             border-style: solid;
-            color: white;
-            box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
         }
 
         .route-info {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            padding: 16px;
-            border-radius: 12px;
-            margin-top: 16px;
-            font-size: 14px;
-            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
-            border: 1px solid #ffeaa7;
+            background: #fff3cd;
+            padding: 8px;
+            border-radius: 5px;
+            margin-top: 8px;
+            font-size: 12px;
         }
 
         .notification {
             position: fixed;
-            top: env(safe-area-inset-top, 20px);
-            left: 16px;
-            right: 16px;
-            padding: 16px 20px;
-            border-radius: 12px;
+            top: 10px;
+            right: 10px;
+            padding: 10px 15px;
+            border-radius: 8px;
             color: white;
-            font-weight: 600;
+            font-weight: bold;
             z-index: 10000;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            transform: translateY(-120px);
-            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-            font-size: 15px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 80%;
+            font-size: 13px;
         }
 
         .notification.show {
-            transform: translateY(0);
+            transform: translateX(0);
         }
 
         .pulse {
@@ -432,90 +309,33 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+            0% {
+                transform: scale(1);
+            }
 
-        /* Estilos para los iconos del mapa */
-        .custom-div-icon {
-            background: none;
-            border: none;
-        }
+            50% {
+                transform: scale(1.1);
+            }
 
-        .marker-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .my-marker {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            border: 3px solid white;
-            animation: pulse 2s infinite;
-        }
-
-        .my-marker::after {
-            content: '👤';
-            font-size: 16px;
-        }
-
-        .client-marker {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            border: 3px solid white;
-        }
-
-        .client-marker::after {
-            content: '🙋';
-            font-size: 16px;
-        }
-
-        .driver-marker {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-            border: 3px solid white;
-        }
-
-        .driver-marker::after {
-            content: '🏍';
-            font-size: 16px;
-        }
-
-        .destination-marker {
-            background: linear-gradient(135deg, #ff6347 0%, #dc3545 100%);
-            border: 3px solid white;
-        }
-
-        .destination-marker::after {
-            content: '📍';
-            font-size: 16px;
-        }
-
-        /* Ocultar controles de ruta de Leaflet */
-        .leaflet-routing-container {
-            display: none;
+            100% {
+                transform: scale(1);
+            }
         }
 
         .distance-badge {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            background: #007bff;
             color: white;
-            padding: 4px 8px;
-            border-radius: 16px;
-            font-size: 11px;
-            font-weight: 700;
-            margin-left: 8px;
-            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 4px;
         }
 
         .btn-group {
             display: flex;
-            gap: 12px;
-            margin-top: 12px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .btn-group .btn {
@@ -523,76 +343,57 @@
             margin-bottom: 0;
         }
 
-        /* Chat Container - Optimizado para WebView */
+        /* Estilos para el chat */
         .chat-container {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 70vh;
-            height: 70dvh;
+            bottom: 60px;
+            right: 15px;
+            width: 90%;
+            height: 60vh;
             background: white;
-            border-radius: 20px 20px 0 0;
-            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
             display: none;
             flex-direction: column;
             z-index: 1000;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
         .chat-container.active {
             display: flex;
-            transform: translateY(0);
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
-            padding: 20px;
-            border-radius: 20px 20px 0 0;
+            padding: 12px;
+            border-radius: 10px 10px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .chat-header h4 {
             margin: 0;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 14px;
         }
 
         .chat-close {
-            background: rgba(255, 255, 255, 0.2);
+            background: none;
             border: none;
             color: white;
-            font-size: 24px;
+            font-size: 18px;
             cursor: pointer;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .chat-close:active {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(0.95);
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 20px;
+            padding: 10px;
             background: #f8f9fa;
         }
 
         .chat-message {
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             display: flex;
             align-items: flex-start;
         }
@@ -606,129 +407,182 @@
         }
 
         .message-bubble {
-            max-width: 75%;
-            padding: 12px 16px;
-            border-radius: 20px;
+            max-width: 70%;
+            padding: 8px 12px;
+            border-radius: 15px;
             position: relative;
-            font-size: 15px;
-            line-height: 1.4;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 13px;
         }
 
         .message-bubble.sent {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            background: #007bff;
             color: white;
-            border-bottom-right-radius: 6px;
+            border-bottom-right-radius: 4px;
         }
 
         .message-bubble.received {
-            background: white;
+            background: #e9ecef;
             color: #333;
-            border-bottom-left-radius: 6px;
-            border: 1px solid #e1e5e9;
+            border-bottom-left-radius: 4px;
         }
 
         .message-time {
-            font-size: 11px;
+            font-size: 9px;
             opacity: 0.7;
-            margin-top: 6px;
-            font-weight: 500;
+            margin-top: 4px;
         }
 
         .chat-input-container {
-            padding: 20px;
-            border-top: 1px solid #e1e5e9;
+            padding: 10px;
+            border-top: 1px solid #ddd;
             display: flex;
-            gap: 12px;
-            align-items: flex-end;
-            background: white;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            gap: 8px;
         }
 
         .chat-input {
             flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #e1e5e9;
-            border-radius: 24px;
-            font-size: 16px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 13px;
             outline: none;
-            background: #fafbfc;
-            transition: all 0.2s ease;
-            max-height: 100px;
-            resize: none;
-        }
-
-        .chat-input:focus {
-            border-color: #764ba2;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
         }
 
         .chat-send {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            background: #007bff;
             color: white;
             border: none;
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
+            width: 36px;
+            height: 36px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-            font-size: 18px;
+            transition: background 0.2s;
         }
 
-        .chat-send:active {
-            transform: scale(0.95);
-            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.4);
+        .chat-send:hover {
+            background: #0056b3;
         }
 
-        /* FABs optimizados para WebView */
+        .chat-indicator {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .btn-chat {
+            background: #28a745;
+            position: relative;
+        }
+
+        .contact-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        /* Nuevos estilos para la lista de clientes */
+        .client-list {
+            margin-top: 12px;
+        }
+
+        .client-item {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .client-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .btn-accept {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            flex: 1;
+            font-size: 11px;
+        }
+
+        .btn-chat {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            flex: 1;
+            font-size: 11px;
+        }
+
+        /* FABs (Floating Action Buttons) */
         .fab-container {
             position: fixed;
-            bottom: env(safe-area-inset-bottom, 20px);
+            bottom: 20px;
             right: 20px;
             z-index: 999;
         }
 
         .fab-main {
-            width: 64px;
-            height: 64px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 24px rgba(118, 75, 162, 0.4);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             cursor: pointer;
-            font-size: 28px;
+            font-size: 24px;
             z-index: 1000;
-            transition: all 0.2s ease;
-            border: 2px solid white;
-        }
-
-        .fab-main:active {
-            transform: scale(0.95);
-            box-shadow: 0 4px 16px rgba(118, 75, 162, 0.5);
         }
 
         .fab-secondary-container {
             position: absolute;
-            bottom: 80px;
+            bottom: 70px;
             right: 0;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 16px;
+            gap: 15px;
         }
 
         .fab-group {
             display: none;
             flex-direction: column;
-            gap: 16px;
+            gap: 15px;
         }
 
         .fab-group.active {
@@ -742,153 +596,77 @@
         }
 
         .fab-secondary {
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             background: #6c757d;
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
             cursor: pointer;
-            font-size: 22px;
-            transition: all 0.2s ease;
-            border: 2px solid white;
-        }
-
-        .fab-secondary:active {
-            transform: scale(0.95);
+            font-size: 20px;
         }
 
         .fab-secondary.success {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: #28a745;
         }
 
         .fab-secondary.danger {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            background: #dc3545;
         }
 
         .fab-secondary.info {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            background: #17a2b8;
         }
 
         .fab-label {
             font-size: 12px;
             color: white;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 4px 12px;
-            border-radius: 16px;
-            margin-top: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 5px;
             text-align: center;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
         }
 
         .chat-indicator {
             position: absolute;
-            top: -6px;
-            right: -6px;
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
             color: white;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
             display: none;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
-            border: 2px solid white;
+            font-size: 10px;
+            font-weight: bold;
         }
 
-        /* Panel toggle optimizado */
+        /* Panel toggle */
         .panel-toggle {
             position: fixed;
-            top: env(safe-area-inset-top, 20px);
-            left: 20px;
-            width: 48px;
-            height: 48px;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             color: #764ba2;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             cursor: pointer;
             z-index: 1001;
             font-size: 20px;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
-        .panel-toggle:active {
-            transform: scale(0.95);
-            background: white;
-        }
-
-        /* Nuevos estilos para lista de clientes */
-        .client-list {
-            margin-top: 16px;
-        }
-
-        .client-item {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            border-left: 4px solid #2196f3;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
-        }
-
-        .client-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .client-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .btn-accept {
-            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            flex: 1;
-            font-size: 13px;
-            font-weight: 600;
-            min-height: 40px;
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-        }
-
-        .btn-chat {
-            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            flex: 1;
-            font-size: 13px;
-            font-weight: 600;
-            min-height: 40px;
-            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
-        }
-
-        /* Responsive para tablets */
+        /* Responsive adjustments */
         @media (min-width: 768px) {
             .container {
                 flex-direction: row;
@@ -896,10 +674,9 @@
 
             .sidebar {
                 position: relative;
-                width: 380px;
+                width: 350px;
                 height: 100%;
                 transform: translateY(0);
-                padding: 20px;
             }
 
             .panel-toggle {
@@ -907,174 +684,61 @@
             }
 
             .chat-container {
-                width: 400px;
-                height: 500px;
+                width: 350px;
+                height: 450px;
                 bottom: 20px;
                 right: 20px;
-                border-radius: 16px;
-            }
-
-            .chat-header {
-                border-radius: 16px 16px 0 0;
             }
         }
 
-        /* Mejoras para dispositivos con notch */
-        @supports (padding: max(0px)) {
-            .sidebar {
-                padding-top: max(env(safe-area-inset-top), 20px);
+        /* Estilos para marcadores personalizados */
+        .custom-marker {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .my-marker {
+            background-color: #764ba2;
+            border: 3px solid white;
+            animation: pulse 2s infinite;
+        }
+
+        .client-marker {
+            background-color: #28a745;
+            border: 2px solid white;
+        }
+
+        .driver-marker {
+            background-color: #007bff;
+            border: 2px solid white;
+        }
+
+        .destination-marker {
+            background-color: #ff6347;
+            border: 2px solid white;
+        }
+
+        /* Animación de pulso para mi marcador */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
             }
 
-            .panel-toggle {
-                top: max(env(safe-area-inset-top), 20px);
+            50% {
+                transform: scale(1.1);
             }
 
-            .notification {
-                top: max(env(safe-area-inset-top), 20px);
-            }
-
-            .fab-container {
-                bottom: max(env(safe-area-inset-bottom), 20px);
-            }
-
-            .chat-input-container {
-                padding-bottom: max(env(safe-area-inset-bottom), 20px);
-            }
-        }
-
-        /* Optimizaciones adicionales para WebView */
-        .leaflet-control-zoom {
-            margin-top: 20px !important;
-            margin-bottom: env(safe-area-inset-bottom, 100px) !important;
-            margin-right: 10px !important;
-        }
-
-        .leaflet-popup-content-wrapper {
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-        }
-
-        .leaflet-popup-tip {
-            background: white;
-        }
-
-        /* Prevenir conflictos con gestos del sistema */
-        .leaflet-container {
-            background: #e6f3ff !important;
-            border: none !important;
-            outline: none !important;
-        }
-
-        .leaflet-control-container {
-            pointer-events: auto !important;
-        }
-
-        .leaflet-control-zoom a {
-            width: 40px !important;
-            height: 40px !important;
-            line-height: 40px !important;
-            font-size: 18px !important;
-            border-radius: 8px !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-        }
-
-        /* Prevent zoom on input focus */
-        input[type="text"],
-        input[type="number"],
-        textarea,
-        select {
-            font-size: 16px !important;
-        }
-
-        /* Smooth scrolling */
-        * {
-            scroll-behavior: smooth;
-        }
-
-        /* Better touch targets */
-        button, .request-item, .fab-main, .fab-secondary {
-            min-height: 44px;
-            min-width: 44px;
-        }
-
-        /* Prevent text selection on UI elements */
-        .btn, .fab-main, .fab-secondary, .panel-toggle, .chat-close {
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        /* Allow text selection in chat and forms */
-        .chat-messages, .form-group input, .form-group textarea {
-            -webkit-user-select: text;
-            user-select: text;
-        }
-
-        /* Improve performance */
-        .sidebar, .chat-container, .notification {
-            will-change: transform;
-        }
-
-        .marker-icon {
-            will-change: transform;
-        }
-
-        /* Específico para evitar refresh en el mapa */
-        .map-container * {
-            overscroll-behavior: contain;
-            -webkit-overflow-scrolling: auto;
-        }
-
-        /* Prevenir overscroll behavior */
-        body, html {
-            overscroll-behavior: none;
-            -webkit-overflow-scrolling: touch;
-            position: fixed;
-            overflow: hidden;
-        }
-
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            .sidebar {
-                background: rgba(30, 30, 30, 0.98);
-                color: #ffffff;
-            }
-
-            .user-info, .request-form, .active-requests {
-                background: #2d2d2d;
-                color: #ffffff;
-                border-color: #404040;
-            }
-
-            .form-group input, .form-group textarea, .user-type select {
-                background: #3d3d3d;
-                color: #ffffff;
-                border-color: #505050;
-            }
-
-            .coordinates {
-                background: #3d3d3d;
-                color: #ffffff;
-            }
-
-            .request-item {
-                background: #3d3d3d;
-                color: #ffffff;
-            }
-
-            .chat-messages {
-                background: #2d2d2d;
-            }
-
-            .message-bubble.received {
-                background: #3d3d3d;
-                color: #ffffff;
-                border-color: #505050;
-            }
-
-            .chat-input {
-                background: #3d3d3d;
-                color: #ffffff;
-                border-color: #505050;
+            100% {
+                transform: scale(1);
             }
         }
     </style>
@@ -1154,10 +818,7 @@
         </div>
 
         <div class="map-container">
-            <div class="map-safe-zone"></div>
-            <div class="map-wrapper">
-                <div id="map"></div>
-            </div>
+            <div id="map"></div>
         </div>
     </div>
 
@@ -1169,22 +830,19 @@
         </div>
         <div id="chatMessages" class="chat-messages"></div>
         <div class="chat-input-container">
-            <textarea id="chatInput" class="chat-input" placeholder="Escribe un mensaje..." rows="1"
-                onkeypress="handleChatKeyPress(event)"></textarea>
+            <input type="text" id="chatInput" class="chat-input" placeholder="Escribe un mensaje..."
+                onkeypress="handleChatKeyPress(event)">
             <button class="chat-send" onclick="sendChatMessage()">➤</button>
         </div>
     </div>
 
     <!-- FAB Container -->
     <div class="fab-container" id="fabContainer">
-        <!-- FAB Principal -->
         <div class="fab-main" id="fabMain">
             <i class="fas fa-taxi" id="fabMainIcon"></i>
         </div>
 
-        <!-- FABs Secundarios -->
         <div class="fab-secondary-container">
-            <!-- Grupo 1: Modo Espera (Cliente) -->
             <div class="fab-group" id="waitingGroup">
                 <div class="fab-with-label" id="fabDestination">
                     <div class="fab-secondary">
@@ -1194,7 +852,6 @@
                 </div>
             </div>
 
-            <!-- Grupo 2: Modo Ruta (Cliente) -->
             <div class="fab-group" id="routeGroup">
                 <div class="fab-with-label" id="fabConfirm">
                     <div class="fab-secondary success">
@@ -1204,7 +861,6 @@
                 </div>
             </div>
 
-            <!-- Grupo 3: Modo Activo (Todos) -->
             <div class="fab-group" id="activeGroup">
                 <div class="fab-with-label" id="fabCancel">
                     <div class="fab-secondary danger">
@@ -1223,10 +879,12 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <!-- Google Maps API -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     <script>
+        // API Key de Google Maps (reemplaza con tu propia API Key)
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyCos2UpXM-mu6LY68HZv4JGHzSzM3wSeG0';
+
         // Configuración global
         const MQTT_CONFIG = {
             host: 'mqttv2.smartpx.org',
@@ -1242,6 +900,8 @@
 
         // Variables globales
         let map;
+        let directionsService;
+        let directionsRenderer;
         let mqttClient;
         let currentUser = {
             id: 'user_' + Date.now(),
@@ -1251,7 +911,6 @@
             status: 'waiting'
         };
         let markers = new Map();
-        let routeControl = null;
         let currentRequest = null;
         let destinationMarker = null;
         let destinationCoords = null;
@@ -1261,215 +920,99 @@
         let chatPartner = null;
         let unreadMessages = 0;
         let fabMenuOpen = false;
-
-        // Optimizaciones para WebView
-        let isWebView = /WebView|wv|Version.*Chrome\/[.0-9]* Mobile/i.test(navigator.userAgent);
-
-        // Prevenir zoom en inputs para iOS WebView
-        if (isWebView && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            document.addEventListener('touchstart', function() {}, true);
-        }
+        let infoWindows = new Map();
 
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function () {
-            initMap();
+            loadGoogleMapsAPI();
             initMQTT();
             initEventListeners();
-            getUserLocation();
             updateUI();
             updateFABs();
-
-            // Configuraciones específicas para WebView
-            setupWebViewOptimizations();
         });
 
-        // Configuraciones específicas para WebView
-        function setupWebViewOptimizations() {
-            // Prevenir pull-to-refresh y otros gestos del sistema
-            const mapContainer = document.querySelector('.map-container');
-            const mapWrapper = document.querySelector('.map-wrapper');
+        // Cargar API de Google Maps
+        function loadGoogleMapsAPI() {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=geometry&callback=initMap`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
 
-            // Prevenir comportamiento de pull-to-refresh específicamente en el mapa
-            mapContainer.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-            }, { passive: false });
+        // Inicializar el mapa (callback de Google Maps)
+       // Inicialización del mapa con AdvancedMarkerElement
+async function initMap() {
+    try {
+        // Cargar las bibliotecas necesarias
+        const { Map } = await google.maps.importLibrary("maps");
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-            mapContainer.addEventListener('touchmove', function(e) {
-                // Solo prevenir si el toque está en la zona superior del mapa
-                const touch = e.touches[0];
-                const rect = mapContainer.getBoundingClientRect();
-                const relativeY = touch.clientY - rect.top;
+        // Coordenadas iniciales (Tingo María, Perú)
+        const tingoMaria = { lat: -9.2945, lng: -76.0073 };
 
-                if (relativeY < 100) { // Zona superior de 100px
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            }, { passive: false });
+        // Configurar el mapa
+        map = new Map(document.getElementById('map'), {
+            center: tingoMaria,
+            zoom: 14,
+            disableDefaultUI: true,
+            gestureHandling: 'greedy',
+            mapId: 'TU_MAP_ID' // Opcional pero recomendado
+        });
 
-            // Configurar zona segura para el mapa
-            const safeZone = document.querySelector('.map-safe-zone');
-            safeZone.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }, { passive: false });
-
-            safeZone.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }, { passive: false });
-
-            // Prevenir comportamiento de pull-to-refresh general
-            document.body.addEventListener('touchstart', function(e) {
-                if (e.touches.length !== 1) { return; }
-                let scrollY = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop;
-                if (scrollY === 0) {
-                    document.body.scrollTop = document.documentElement.scrollTop = 1;
-                }
-            }, { passive: false });
-
-            // Prevenir overscroll en el body
-            document.body.addEventListener('touchmove', function(e) {
-                const target = e.target;
-
-                // Permitir scroll solo en elementos específicos
-                const allowedElements = [
-                    '.sidebar', '.chat-messages', '.active-requests',
-                    '.chat-input', 'textarea', 'input'
-                ];
-
-                const isAllowed = allowedElements.some(selector =>
-                    target.closest(selector) !== null
-                );
-
-                if (!isAllowed) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
-            // Mejorar rendimiento en WebView
-            if (isWebView) {
-                document.documentElement.style.setProperty('--animation-duration', '0.2s');
-
-                const setVH = () => {
-                    let vh = window.innerHeight * 0.01;
-                    document.documentElement.style.setProperty('--vh', `${vh}px`);
-                };
-                setVH();
-                window.addEventListener('resize', setVH);
-                window.addEventListener('orientationchange', setVH);
+        // Inicializar servicios
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer({
+            map: map,
+            suppressMarkers: true,
+            polylineOptions: {
+                strokeColor: '#764ba2',
+                strokeOpacity: 0.7,
+                strokeWeight: 4
             }
+        });
 
-            // Configurar comportamiento táctil mejorado
-            let lastTouchEnd = 0;
-            document.addEventListener('touchend', function(event) {
-                const now = (new Date()).getTime();
-                if (now - lastTouchEnd <= 300) {
-                    event.preventDefault();
-                }
-                lastTouchEnd = now;
-            }, { passive: false });
-        }
+        // Control de zoom personalizado
+        const zoomControl = document.createElement('div');
+        zoomControl.className = 'custom-zoom-control';
 
-        // Inicializar el mapa con optimizaciones para WebView
-        function initMap() {
-            // Coordenadas de Tingo María, Perú
-            const tingoMaria = [-9.2945, -76.0073];
+        const zoomIn = document.createElement('button');
+        zoomIn.className = 'custom-zoom-btn';
+        zoomIn.innerHTML = '+';
+        zoomIn.onclick = () => map.setZoom(map.getZoom() + 1);
 
-            // Configuración optimizada para WebView con protección contra gestos
-            map = L.map('map', {
-                center: tingoMaria,
-                zoom: 14,
-                zoomControl: true,
-                attributionControl: false,
-                preferCanvas: true,
-                maxZoom: 18,
-                minZoom: 10,
-                zoomSnap: 0.5,
-                zoomDelta: 0.5,
-                wheelPxPerZoomLevel: 100,
-                // Configuraciones específicas para evitar conflictos
-                doubleClickZoom: true,
-                scrollWheelZoom: true,
-                touchZoom: true,
-                dragging: true,
-                // Configurar límites de arrastre para evitar conflictos
-                maxBounds: [
-                    [-10.0, -77.0], // Suroeste de Tingo María
-                    [-8.5, -75.0]   // Noreste de Tingo María
-                ]
-            });
+        const zoomOut = document.createElement('button');
+        zoomOut.className = 'custom-zoom-btn';
+        zoomOut.innerHTML = '-';
+        zoomOut.onclick = () => map.setZoom(map.getZoom() - 1);
 
-            // Configurar tiles con mejor rendimiento
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap',
-                maxZoom: 18,
-                detectRetina: true,
-                // Configuraciones para mejor rendimiento
-                updateWhenIdle: true,
-                keepBuffer: 2,
-                updateWhenZooming: false
-            }).addTo(map);
+        zoomControl.appendChild(zoomIn);
+        zoomControl.appendChild(zoomOut);
 
-            // Reposicionar controles para evitar conflictos
-            map.zoomControl.setPosition('bottomright');
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomControl);
 
-            // Evento para hacer clic en el mapa con debounce
-            let clickTimeout;
-            map.on('click', function (e) {
-                clearTimeout(clickTimeout);
-                clickTimeout = setTimeout(() => {
-                    if (selectingDestination) {
-                        setDestination(e.latlng.lat, e.latlng.lng);
-                        toggleFABMenu();
-                    }
-                }, 200); // Debounce de 200ms
-            });
+        // Evento de clic en el mapa
+        map.addListener('click', function(e) {
+            if (selectingDestination) {
+                setDestination(e.latLng.lat(), e.latLng.lng());
+                toggleFABMenu();
+            }
+        });
 
-            // Prevenir propagación de eventos del mapa que puedan causar refresh
-            const mapContainer = map.getContainer();
+        console.log('Mapa con AdvancedMarkerElement inicializado correctamente');
+    } catch (error) {
+        console.error('Error al inicializar el mapa:', error);
+        showNotification('Error al cargar el mapa. Por favor recarga la página.', 'error');
+    }
+}
 
-            mapContainer.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-            }, { passive: true });
-
-            mapContainer.addEventListener('touchmove', function(e) {
-                e.stopPropagation();
-            }, { passive: true });
-
-            mapContainer.addEventListener('touchend', function(e) {
-                e.stopPropagation();
-            }, { passive: true });
-
-            // Optimizar rendimiento del mapa en WebView
-            map.on('movestart', function() {
-                mapContainer.style.pointerEvents = 'auto'; // Mantener eventos activos
-            });
-
-            map.on('moveend', function() {
-                mapContainer.style.pointerEvents = 'auto';
-            });
-
-            // Prevenir zoom accidental durante drag
-            map.on('dragstart', function() {
-                map.scrollWheelZoom.disable();
-            });
-
-            map.on('dragend', function() {
-                setTimeout(() => {
-                    map.scrollWheelZoom.enable();
-                }, 100);
-            });
-
-            console.log('Mapa inicializado con protecciones anti-refresh');
-        }
-
-        // Inicializar MQTT con mejor manejo de errores para WebView
+        // Inicializar MQTT
         function initMQTT() {
             const clientId = currentUser.id || 'webclient_' + Math.random().toString(16).substr(2, 8);
             const path = '';
-            const timeout = 15; // Aumentar timeout para WebView
+            const timeout = 10;
 
-            console.log(`Conectando MQTT: wss://${MQTT_CONFIG.host}:${MQTT_CONFIG.port}`);
+            console.log(`Intentando conexión MQTT a: wss://${MQTT_CONFIG.host}:${MQTT_CONFIG.port}${path}`);
 
             mqttClient = new Paho.MQTT.Client(
                 MQTT_CONFIG.host,
@@ -1479,17 +1022,18 @@
             );
 
             mqttClient.onConnectionLost = function (response) {
-                console.error('Conexión MQTT perdida:', response.errorCode, response.errorMessage);
+                console.error('Conexión MQTT perdida. Código:', response.errorCode, 'Razón:', response.errorMessage);
                 updateConnectionStatus(false);
 
-                // Reintento con backoff exponencial
-                const delay = Math.min(30000, 3000 * Math.pow(1.5, reconnectAttempts));
+                const delay = Math.min(30000, 5000 * Math.pow(2, reconnectAttempts));
+                console.log(`Reintentando en ${delay / 1000} segundos...`);
                 setTimeout(initMQTT, delay);
                 reconnectAttempts++;
             };
 
             mqttClient.onMessageArrived = function (message) {
                 try {
+                    console.debug('Mensaje recibido:', message.destinationName, message.payloadString);
                     handleMQTTMessage(message);
                 } catch (e) {
                     console.error('Error procesando mensaje:', e);
@@ -1498,180 +1042,35 @@
 
             const connectOptions = {
                 timeout: timeout,
-                keepAliveInterval: 30, // Reducir para WebView
+                keepAliveInterval: 60,
                 cleanSession: true,
                 useSSL: true,
                 onSuccess: function () {
-                    console.log('MQTT conectado exitosamente');
+                    console.log('Conexión MQTT establecida con éxito');
                     updateConnectionStatus(true);
                     reconnectAttempts = 0;
                     subscribeToTopics();
                 },
                 onFailure: function (error) {
-                    console.error('Error MQTT:', error.errorCode, error.errorMessage);
+                    console.error('Error de conexión. Código:', error.errorCode, 'Error:', error.errorMessage);
                     updateConnectionStatus(false);
 
-                    const delay = Math.min(30000, 3000 * Math.pow(1.5, reconnectAttempts));
+                    const delay = Math.min(30000, 5000 * Math.pow(2, reconnectAttempts));
                     setTimeout(initMQTT, delay);
                     reconnectAttempts++;
-                }
+                },
             };
 
             try {
                 mqttClient.connect(connectOptions);
             } catch (e) {
-                console.error('Excepción conectando MQTT:', e);
+                console.error('Excepción al conectar:', e);
                 setTimeout(initMQTT, 5000);
             }
         }
 
+        // Variable para control de reintentos
         let reconnectAttempts = 0;
-
-        // Resto del código JavaScript permanece igual...
-        // [Incluir aquí todo el JavaScript restante del código original,
-        //  pero con las optimizaciones ya aplicadas]
-
-        // Suscribirse a los topics MQTT
-        function subscribeToTopics() {
-            Object.values(MQTT_CONFIG.topics).forEach(topic => {
-                mqttClient.subscribe(topic);
-                console.log('Suscrito a:', topic);
-            });
-        }
-
-        // [Continuar con el resto de las funciones JavaScript del código original...]
-        // [El código es muy extenso, así que incluiré las funciones principales
-        //  y las optimizaciones específicas para WebView]
-
-        // Función mejorada para manejo táctil en WebView
-        function handleTouch(element, callback) {
-            let startY = 0;
-            let isScrolling = false;
-
-            element.addEventListener('touchstart', function(e) {
-                startY = e.touches[0].pageY;
-                isScrolling = false;
-            });
-
-            element.addEventListener('touchmove', function(e) {
-                const moveY = e.touches[0].pageY;
-                if (Math.abs(moveY - startY) > 10) {
-                    isScrolling = true;
-                }
-            });
-
-            element.addEventListener('touchend', function(e) {
-                if (!isScrolling) {
-                    callback(e);
-                }
-            });
-        }
-
-        // Optimizar notificaciones para WebView
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-
-            const colors = {
-                'success': 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
-                'error': 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)',
-                'warning': 'linear-gradient(135deg, #ffc107 0%, #e0a800 100%)',
-                'info': 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)'
-            };
-
-            notification.style.background = colors[type] || colors.info;
-            notification.textContent = message;
-
-            document.body.appendChild(notification);
-
-            // Animación optimizada para WebView
-            requestAnimationFrame(() => {
-                notification.classList.add('show');
-            });
-
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
-        }
-
-        // [Incluir aquí el resto de las funciones del código original con las optimizaciones aplicadas]
-
-        // Función de inicialización de eventos optimizada para WebView
-        function initEventListeners() {
-            // Usar eventos táctiles optimizados para WebView
-            const userTypeSelect = document.getElementById('userTypeSelect');
-            userTypeSelect.addEventListener('change', function () {
-                currentUser.type = this.value;
-                updateUI();
-                updateFABs();
-            });
-
-            // Panel toggle con mejor respuesta táctil
-            const panelToggle = document.getElementById('panelToggle');
-            handleTouch(panelToggle, function() {
-                document.getElementById('sidebar').classList.toggle('active');
-            });
-
-            // FAB principal con feedback táctil mejorado
-            const fabMain = document.getElementById('fabMain');
-            handleTouch(fabMain, function() {
-                // Añadir feedback visual
-                fabMain.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    fabMain.style.transform = 'scale(1)';
-                }, 100);
-
-                if (fabMenuOpen) {
-                    toggleFABMenu();
-                } else {
-                    handleMainAction();
-                }
-            });
-
-            // FAB secundarios
-            const fabDestination = document.getElementById('fabDestination');
-            handleTouch(fabDestination, startDestinationSelection);
-
-            const fabCancel = document.getElementById('fabCancel');
-            handleTouch(fabCancel, cancelCurrentRequest);
-
-            const fabConfirm = document.getElementById('fabConfirm');
-            handleTouch(fabConfirm, confirmAndSendRequest);
-
-            const fabChat = document.getElementById('fabChat');
-            handleTouch(fabChat, openChat);
-
-            // Lista de solicitudes con mejor manejo táctil
-            const requestsList = document.getElementById('requestsList');
-            requestsList.addEventListener('click', function (e) {
-                const requestItem = e.target.closest('.request-item');
-                if (requestItem && e.target.classList.contains('accept-btn')) {
-                    const data = JSON.parse(requestItem.dataset.requestData);
-                    acceptRequest(data.userId, data);
-                }
-            });
-
-            // Mejorar input de chat para WebView
-            const chatInput = document.getElementById('chatInput');
-            chatInput.addEventListener('input', function() {
-                // Auto-resize textarea
-                this.style.height = 'auto';
-                this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-            });
-        }
-
-        // [Continuar con las demás funciones del código original...]
-        // Por brevedad, incluiré solo las funciones principales y las optimizaciones específicas
-
-        // Resto de funciones JavaScript del código original van aquí...
-        // (getUserLocation, updateLocation, handleMQTTMessage, etc.)
-
-
 
         // Suscribirse a los topics MQTT
         function subscribeToTopics() {
@@ -1712,10 +1111,14 @@
         }
 
         // Manejar mensajes de clientes
+
         function handleClientMessage(data) {
             if (data.action === 'request') {
                 if (data.userId !== currentUser.id) {
-                    addOrUpdateMarker(data, 'client');
+                    addOrUpdateMarker({
+                        ...data,
+                        type: 'client'
+                    }, 'client');
                     addToRequestsList(data, 'client');
                 }
             } else if (data.action === 'cancel') {
@@ -1723,18 +1126,19 @@
                 removeFromRequestsList(data.userId);
             }
         }
-
-        // Manejar mensajes de conductores con solicitudes de servicio
+        // Manejar mensajes de conductores
         function handleDriverMessage(data) {
             if (data.action === 'available') {
                 if (data.userId !== currentUser.id) {
-                    addOrUpdateMarker(data, 'driver');
+                    addOrUpdateMarker({
+                        ...data,
+                        type: 'driver'
+                    }, 'driver');
                     addToRequestsList(data, 'driver');
                 }
             } else if (data.action === 'accept') {
                 handleDriverAcceptance(data);
             } else if (data.action === 'request_client') {
-                // Conductor solicita a cliente
                 if (data.targetClientId === currentUser.id) {
                     handleDriverRequestToClient(data);
                 }
@@ -1743,13 +1147,11 @@
                 removeFromRequestsList(data.userId);
             }
 
-            // Mostrar lista de clientes si es taxista
             if (currentUser.type === 'driver' && currentUser.status === 'available') {
                 updateClientList();
             }
         }
-
-        // Nueva función para actualizar lista de clientes
+        // Actualizar lista de clientes
         function updateClientList() {
             const requestsList = document.getElementById('requestsList');
             requestsList.innerHTML = '<h3>👥 Clientes Solicitando Taxi</h3>';
@@ -1757,9 +1159,9 @@
             let hasClients = false;
 
             markers.forEach((marker, userId) => {
-                const userData = marker.options.userData;
+                const userData = marker.userData;
 
-                if (userData.type === 'client' && userData.action === 'request' && userId !== currentUser.id) {
+                if (userData && userData.type === 'client' && userData.action === 'request' && userId !== currentUser.id) {
                     hasClients = true;
                     addClientToList(userData, userId);
                 }
@@ -1770,7 +1172,7 @@
             }
         }
 
-        // Nueva función para añadir cliente a la lista
+        // Añadir cliente a la lista
         function addClientToList(clientData, clientId) {
             const requestsList = document.getElementById('requestsList');
             const distance = calculateDistance(
@@ -1784,9 +1186,7 @@
 
             clientItem.innerHTML = `
                 <div class="client-header">
-                         <p><strong>ID:</strong> ${data && data.userId ? data.userId.substring(0, 8) : 'N/A'}</p>
-
-
+                    <p><strong>ID:</strong> ${clientData.userId ? clientData.userId.substring(0, 8) : 'N/A'}</p>
                     <span class="distance-badge">${distance.toFixed(1)} km</span>
                 </div>
                 <p><strong>Ubicación:</strong> ${clientData.lat.toFixed(4)}, ${clientData.lng.toFixed(4)}</p>
@@ -1805,14 +1205,33 @@
             requestsList.appendChild(clientItem);
         }
 
-        // Nueva función para aceptar cliente
+        // Aceptar solicitud de cliente
         window.acceptClientRequest = function (clientId) {
-            const clientData = markers.get(clientId)?.options?.userData;
+           console.log("Intentando aceptar cliente:", clientId);
 
-            if (!clientData) {
-                showNotification('Cliente no encontrado', 'error');
-                return;
-            }
+        // Verificar si el marcador existe
+        if (!markers.has(clientId)) {
+            console.error("Marcador no encontrado para cliente:", clientId);
+            showNotification('Cliente no encontrado', 'error');
+            return;
+        }
+
+        const clientMarker = markers.get(clientId);
+
+        // Mostrar información depurable sin usar JSON.stringify
+        console.log("Datos del marcador:", {
+            id: clientMarker?.userData?.userId,
+            position: clientMarker?.position,
+            type: clientMarker?.userData?.type
+        });
+
+        // Verificar datos esenciales
+        const clientData = clientMarker?.userData;
+        if (!clientData || !clientData.lat || !clientData.lng) {
+            console.error("Datos del cliente incompletos:", clientData);
+            showNotification('Datos del cliente incompletos', 'error');
+            return;
+        }
 
             const assignment = {
                 clientId: clientId,
@@ -1836,11 +1255,10 @@
             publishMessage(MQTT_CONFIG.topics.assignments, assignment);
             showNotification(`Viaje aceptado con cliente ${clientId.substring(0, 6)}`, 'success');
 
-            // Iniciar chat automáticamente
             initiateChatWithClient(clientId);
         };
 
-        // Nueva función para iniciar chat con cliente
+        // Iniciar chat con cliente
         window.initiateChatWithClient = function (clientId) {
             chatPartner = {
                 id: clientId,
@@ -1852,7 +1270,6 @@
             openChat();
             addSystemMessage(`Chat iniciado con cliente ${clientId.substring(0, 6)}`);
 
-            // Notificar al cliente
             const chatNotification = {
                 targetId: clientId,
                 senderId: currentUser.id,
@@ -1864,22 +1281,19 @@
             publishMessage(MQTT_CONFIG.topics.messages, chatNotification);
         };
 
-        // Manejar cuando un conductor solicita a un cliente
+        // Manejar solicitud de conductor a cliente
         function handleDriverRequestToClient(data) {
             showNotification(`Conductor ${data.userId} quiere ofrecerte servicio`, 'info');
 
-            // Establecer chat con el conductor
             chatPartner = {
                 id: data.userId,
                 type: 'driver'
             };
             updateChatButton();
 
-            // Incrementar mensajes no leídos
             unreadMessages++;
             updateUnreadIndicator();
 
-            // Agregar mensaje al chat
             addSystemMessage(`El conductor ${data.userId} está interesado en tu viaje. Puedes chatear para acordar detalles.`);
         }
 
@@ -1902,14 +1316,14 @@
                 // Cliente: ocultar otros taxistas
                 markers.forEach((marker, markerId) => {
                     if (markerId !== data.driverId && markerId !== currentUser.id) {
-                        map.removeLayer(marker);
+                        marker.setMap(null);
+                        markers.delete(markerId);
                     }
                 });
 
                 showNotification(`¡Taxista ${data.driverId} ha aceptado tu solicitud!`, 'success');
                 currentUser.status = 'in_trip';
 
-                // Establecer chat con el conductor
                 chatPartner = {
                     id: data.driverId,
                     type: 'driver'
@@ -1917,7 +1331,6 @@
                 updateChatButton();
                 addSystemMessage('Ahora puedes chatear con tu conductor');
 
-                // Mostrar solo el taxista asignado
                 if (data.driverLocation) {
                     addOrUpdateMarker({
                         userId: data.driverId,
@@ -1927,11 +1340,9 @@
                     }, 'driver');
                 }
             } else if (data.driverId === currentUser.id) {
-                // Conductor: mostrar ruta al cliente
                 showNotification(`¡Nueva carrera asignada!`, 'success');
                 currentUser.status = 'in_trip';
 
-                // Establecer chat con el cliente
                 chatPartner = {
                     id: data.clientId,
                     type: 'client'
@@ -1956,12 +1367,10 @@
                 updateFABs();
             });
 
-            // Panel toggle
             document.getElementById('panelToggle').addEventListener('click', function () {
                 document.getElementById('sidebar').classList.toggle('active');
             });
 
-            // FAB Main button
             document.getElementById('fabMain').addEventListener('click', function () {
                 if (fabMenuOpen) {
                     toggleFABMenu();
@@ -1970,14 +1379,11 @@
                 }
             });
 
-            // FAB Secondary buttons
             document.getElementById('fabDestination').addEventListener('click', startDestinationSelection);
-
             document.getElementById('fabCancel').addEventListener('click', cancelCurrentRequest);
             document.getElementById('fabConfirm').addEventListener('click', confirmAndSendRequest);
             document.getElementById('fabChat').addEventListener('click', openChat);
 
-            // Click en elementos de la lista
             document.getElementById('requestsList').addEventListener('click', function (e) {
                 const requestItem = e.target.closest('.request-item');
                 if (requestItem && e.target.classList.contains('accept-btn')) {
@@ -2011,34 +1417,28 @@
 
         // Actualizar FABs según estado
         function updateFABs() {
-            // Ocultar todos los grupos primero
             document.querySelectorAll('.fab-group').forEach(group => {
                 group.classList.remove('active');
             });
 
-            // Mostrar solo el grupo necesario
             if (currentUser.type === 'client') {
                 if (!currentUser.lat) {
-                    // Esperando ubicación
                     document.getElementById('fabMainIcon').className = 'fas fa-location-arrow';
                 }
                 else if (!destinationCoords && !currentRequest) {
-                    // Esperando destino
                     document.getElementById('waitingGroup').classList.add('active');
                     document.getElementById('fabMainIcon').className = 'fas fa-map-marker-alt';
                 }
                 else if (destinationCoords && !currentRequest) {
-                    // Ruta lista para confirmar
                     document.getElementById('routeGroup').classList.add('active');
                     document.getElementById('fabMainIcon').className = 'fas fa-paper-plane';
                 }
                 else {
-                    // Viaje activo
                     document.getElementById('activeGroup').classList.add('active');
                     document.getElementById('fabMainIcon').className = 'fas fa-car-side';
                 }
             }
-            else { // Driver
+            else {
                 if (currentUser.status === 'available' || currentUser.status === 'in_trip') {
                     document.getElementById('activeGroup').classList.add('active');
                 }
@@ -2046,12 +1446,12 @@
                     currentUser.status === 'available' ? 'fas fa-bell' : 'fas fa-motorcycle';
             }
 
-            // Mostrar indicador de chat si hay mensajes
             document.getElementById('unreadIndicator').style.display =
                 unreadMessages > 0 ? 'flex' : 'none';
             document.getElementById('unreadIndicator').textContent =
                 unreadMessages > 9 ? '9+' : unreadMessages;
         }
+
         // Obtener ubicación del usuario
         function getUserLocation() {
             if (navigator.geolocation) {
@@ -2066,7 +1466,6 @@
                     },
                     function (error) {
                         console.error('Error obteniendo ubicación:', error);
-                        // Usar ubicación por defecto en Tingo María
                         updateLocation(-9.2945, -76.0073);
                     }
                 );
@@ -2084,14 +1483,20 @@
             document.getElementById('lng').textContent = lng.toFixed(6);
 
             // Centrar mapa en la nueva ubicación
-            map.setView([lat, lng], 16);
+            map.setCenter({ lat, lng });
 
             // Agregar/actualizar marcador del usuario actual
-            addOrUpdateMarker(currentUser, currentUser.type);
+            addOrUpdateMarker({
+                userId: currentUser.id,
+                lat: lat,
+                lng: lng,
+                timestamp: Date.now(),
+                type: currentUser.type,
+                status: currentUser.status
+            }, currentUser.type);
 
             updateFABs();
         }
-
         // Iniciar selección de destino
         function startDestinationSelection() {
             selectingDestination = true;
@@ -2099,7 +1504,7 @@
             document.getElementById('destinationSelector').innerHTML =
                 '<p>🎯 <strong>Haz click en el mapa para marcar tu destino</strong></p>';
 
-            map.getContainer().style.cursor = 'crosshair';
+            map.setOptions({ cursor: 'crosshair' });
             showNotification('Haz click en el mapa para seleccionar tu destino', 'info');
         }
 
@@ -2107,29 +1512,26 @@
         function setDestination(lat, lng) {
             destinationCoords = { lat, lng };
 
-            // Remover marcador anterior si existe
             if (destinationMarker) {
-                map.removeLayer(destinationMarker);
+                destinationMarker.setMap(null);
             }
 
-            // Crear marcador de destino
-            const iconHtml = '<div class="marker-pin destination-marker"></div>';
-            const customIcon = L.divIcon({
-                html: iconHtml,
-                className: 'custom-div-icon',
-                iconSize: [30, 30],
-                iconAnchor: [15, 30]
+            destinationMarker = new google.maps.Marker({
+                position: { lat: lat, lng: lng },
+                map: map,
+                icon: createCustomMarkerIcon('destination'),
+                title: 'Tu destino'
             });
 
-            destinationMarker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
-            destinationMarker.bindPopup('<strong>🎯 Tu destino</strong>').openPopup();
+            const infoWindow = new google.maps.InfoWindow({
+                content: '<strong>🎯 Tu destino</strong>'
+            });
+            infoWindow.open(map, destinationMarker);
 
-            // Dibujar ruta
             drawRoute();
 
-            // Actualizar UI
             selectingDestination = false;
-            map.getContainer().style.cursor = '';
+            map.setOptions({ cursor: 'default' });
             document.getElementById('destinationSelector').classList.remove('active');
             document.getElementById('destinationSelector').innerHTML =
                 '<p>✅ <strong>Destino seleccionado</strong></p>';
@@ -2137,42 +1539,101 @@
             updateFABs();
         }
 
-        // Dibujar ruta
-        function drawRoute() {
-            // Remover ruta anterior si existe
-            if (routeControl) {
-                map.removeControl(routeControl);
+        // Crear icono personalizado para marcadores
+        async function createCustomMarkerIcon(type, isPulsing = false) {
+            // Definir colores y emojis para cada tipo
+            const markerConfigs = {
+                my: {
+                    color: '#764ba2', // Morado
+                    emoji: '👤'
+                },
+                client: {
+                    color: '#28a745', // Verde
+                    emoji: '🙋'
+                },
+                driver: {
+                    color: '#007bff', // Azul
+                    emoji: '🏍'
+                },
+                destination: {
+                    color: '#dc3545', // Rojo
+                    emoji: '📍'
+                }
+            };
+
+            const config = markerConfigs[type] || markerConfigs.client;
+
+            // Crear elemento HTML para el marcador
+            const pinElement = document.createElement("div");
+            pinElement.className = "advanced-marker";
+            pinElement.style.backgroundColor = config.color;
+            pinElement.style.borderRadius = "50%";
+            pinElement.style.border = "2px solid white";
+            pinElement.style.width = "36px";
+            pinElement.style.height = "36px";
+            pinElement.style.display = "flex";
+            pinElement.style.alignItems = "center";
+            pinElement.style.justifyContent = "center";
+            pinElement.style.boxShadow = "0 2px 5px rgba(0,0,0,0.3)";
+
+            const emojiElement = document.createElement("div");
+            emojiElement.textContent = config.emoji;
+            emojiElement.style.fontSize = "16px";
+
+            pinElement.appendChild(emojiElement);
+
+            if (isPulsing) {
+                pinElement.classList.add("pulse-marker");
             }
 
-            routeControl = L.Routing.control({
-                waypoints: [
-                    L.latLng(currentUser.lat, currentUser.lng),
-                    L.latLng(destinationCoords.lat, destinationCoords.lng)
-                ],
-                routeWhileDragging: false,
-                addWaypoints: false,
-                createMarker: function () { return null; }, // No crear marcadores adicionales
-                lineOptions: {
-                    styles: [{ color: '#764ba2', weight: 4, opacity: 0.7 }]
+            // Retornar el objeto correctamente dentro de la función
+            return {
+                element: pinElement,
+                class: type
+            };
+        }
+
+        // Obtener color de marcador según tipo
+        function getMarkerColor(type) {
+            const colors = {
+                'my': '#764ba2',
+                'client': '#28a745',
+                'driver': '#007bff',
+                'destination': '#ff6347'
+            };
+            return colors[type] || '#6c757d';
+        }
+
+        // Dibujar ruta
+        function drawRoute() {
+            if (!currentUser.lat || !destinationCoords) return;
+
+            const request = {
+                origin: { lat: currentUser.lat, lng: currentUser.lng },
+                destination: { lat: destinationCoords.lat, lng: destinationCoords.lng },
+                travelMode: google.maps.TravelMode.DRIVING,
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+
+                    const route = result.routes[0];
+                    const leg = route.legs[0];
+
+                    document.getElementById('routeInfo').style.display = 'block';
+                    document.getElementById('routeDistance').textContent = leg.distance.text;
+                    document.getElementById('routeDuration').textContent = leg.duration.text;
+
+                    const bounds = new google.maps.LatLngBounds();
+                    bounds.extend({ lat: currentUser.lat, lng: currentUser.lng });
+                    bounds.extend({ lat: destinationCoords.lat, lng: destinationCoords.lng });
+                    map.fitBounds(bounds);
+                } else {
+                    console.error('Error al calcular la ruta:', status);
+                    showNotification('Error al calcular la ruta', 'error');
                 }
-            }).on('routesfound', function (e) {
-                const routes = e.routes;
-                const summary = routes[0].summary;
-
-                // Actualizar información de ruta
-                document.getElementById('routeInfo').style.display = 'block';
-                document.getElementById('routeDistance').textContent =
-                    (summary.totalDistance / 1000).toFixed(2) + ' km';
-                document.getElementById('routeDuration').textContent =
-                    Math.round(summary.totalTime / 60) + ' min';
-
-                // Ajustar vista del mapa
-                const bounds = L.latLngBounds([
-                    [currentUser.lat, currentUser.lng],
-                    [destinationCoords.lat, destinationCoords.lng]
-                ]);
-                map.fitBounds(bounds, { padding: [50, 50] });
-            }).addTo(map);
+            });
 
             updateFABs();
         }
@@ -2207,17 +1668,15 @@
             updateFABs();
 
             showNotification('Solicitud de taxi enviada. Buscando conductores cercanos...', 'success');
-
-            // Mostrar taxistas cercanos
             highlightNearbyDrivers();
         }
 
         // Resaltar conductores cercanos
         function highlightNearbyDrivers() {
-            const maxDistance = 2; // km
+            const maxDistance = 2;
 
             markers.forEach((marker, markerId) => {
-                const markerData = marker.options.userData;
+                const markerData = marker.userData;
                 if (markerData && markerData.type === 'driver') {
                     const distance = calculateDistance(
                         currentUser.lat, currentUser.lng,
@@ -2225,9 +1684,6 @@
                     );
 
                     if (distance <= maxDistance) {
-                        marker.setIcon(createPulsingIcon('driver'));
-
-                        // Notificar al conductor
                         const notification = {
                             targetId: markerId,
                             senderId: currentUser.id,
@@ -2241,28 +1697,14 @@
             });
         }
 
-        // Crear icono con efecto de pulso
-        function createPulsingIcon(type) {
-            const iconClass = type === 'client' ? 'client-marker' : 'driver-marker';
-            const iconHtml = `<div class="marker-pin ${iconClass} pulse"></div>`;
-
-            return L.divIcon({
-                html: iconHtml,
-                className: 'custom-div-icon',
-                iconSize: [30, 30],
-                iconAnchor: [15, 30]
-            });
-        }
-
         // Limpiar ruta
         function clearRoute() {
-            if (routeControl) {
-                map.removeControl(routeControl);
-                routeControl = null;
+            if (directionsRenderer) {
+                directionsRenderer.setDirections({ routes: [] });
             }
 
             if (destinationMarker) {
-                map.removeLayer(destinationMarker);
+                destinationMarker.setMap(null);
                 destinationMarker = null;
             }
 
@@ -2276,10 +1718,10 @@
 
         // Enviar disponibilidad del conductor
         function sendDriverAvailability() {
-            if (!currentUser.lat || !currentUser.lng) {
-                alert('Por favor, permite el acceso a tu ubicación');
-                return;
-            }
+            // if (!currentUser.lat || !currentUser.lng) {
+            //     alert('Por favor, permite el acceso a tu ubicación');
+            //     return;
+            // }
 
             const description = document.getElementById('description').value.trim();
             const price = document.getElementById('price').value;
@@ -2328,9 +1770,8 @@
             }
         }
 
-        // Aceptar solicitud (para conductores)
+        // Aceptar solicitud
         function acceptRequest(requestId, clientData) {
-            // Si el conductor acepta a un cliente
             if (currentUser.type === 'driver' && clientData.action === 'request') {
                 const acceptance = {
                     clientId: requestId,
@@ -2353,7 +1794,6 @@
 
                 publishMessage(MQTT_CONFIG.topics.assignments, acceptance);
 
-                // Notificar al cliente
                 const notification = {
                     targetId: requestId,
                     senderId: currentUser.id,
@@ -2367,7 +1807,6 @@
                 updateFABs();
                 showNotification('Solicitud aceptada. Dirigiéndose al cliente...', 'success');
             }
-            // Si el cliente solicita a un conductor específico
             else if (currentUser.type === 'client' && clientData.action === 'available') {
                 requestServiceFromDriver(requestId, clientData);
             }
@@ -2377,7 +1816,6 @@
         function requestServiceFromDriver(driverId, driverData) {
             const destination = document.getElementById('destination').value.trim();
 
-            // Si no hay destino seleccionado, pedir que lo seleccione
             if (!destinationCoords && !destination) {
                 showNotification('Por favor, selecciona primero tu destino en el mapa', 'warning');
                 startDestinationSelection();
@@ -2399,14 +1837,12 @@
                 timestamp: Date.now()
             };
 
-            // Establecer chat con el conductor
             chatPartner = {
                 id: driverId,
                 type: 'driver'
             };
             updateChatButton();
 
-            // Enviar mensaje directo al conductor
             const directMessage = {
                 targetId: driverId,
                 senderId: currentUser.id,
@@ -2424,38 +1860,48 @@
 
             showNotification(`Solicitud enviada al conductor ${driverId}`, 'success');
 
-            // Abrir chat automáticamente
             openChat();
             addSystemMessage(`Has solicitado servicio al conductor. Puedes chatear mientras esperas respuesta.`);
         }
 
-        // Dibujar ruta asignada (para conductor)
+        // Dibujar ruta asignada
         function drawAssignedRoute(clientLocation, destination) {
-            if (routeControl) {
-                map.removeControl(routeControl);
-            }
-
-            const waypoints = [
-                L.latLng(currentUser.lat, currentUser.lng),
-                L.latLng(clientLocation.lat, clientLocation.lng)
-            ];
+            const waypoints = [];
 
             if (destination) {
-                waypoints.push(L.latLng(destination.lat, destination.lng));
+                waypoints.push({
+                    location: { lat: destination.lat, lng: destination.lng },
+                    stopover: true
+                });
             }
 
-            routeControl = L.Routing.control({
+            const request = {
+                origin: { lat: currentUser.lat, lng: currentUser.lng },
+                destination: { lat: clientLocation.lat, lng: clientLocation.lng },
                 waypoints: waypoints,
-                routeWhileDragging: false,
-                addWaypoints: false,
-                createMarker: function () { return null; },
-                lineOptions: {
-                    styles: [{ color: '#28a745', weight: 5, opacity: 0.7 }]
+                travelMode: google.maps.TravelMode.DRIVING,
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                    directionsRenderer.setOptions({
+                        polylineOptions: {
+                            strokeColor: '#28a745',
+                            strokeWeight: 5,
+                            strokeOpacity: 0.7
+                        }
+                    });
+
+                    const bounds = new google.maps.LatLngBounds();
+                    bounds.extend({ lat: currentUser.lat, lng: currentUser.lng });
+                    bounds.extend({ lat: clientLocation.lat, lng: clientLocation.lng });
+                    if (destination) {
+                        bounds.extend({ lat: destination.lat, lng: destination.lng });
+                    }
+                    map.fitBounds(bounds);
                 }
-            }).on('routesfound', function (e) {
-                const bounds = L.latLngBounds(waypoints);
-                map.fitBounds(bounds, { padding: [50, 50] });
-            }).addTo(map);
+            });
         }
 
         // Publicar mensaje MQTT
@@ -2471,119 +1917,157 @@
             }
         }
 
-        // Agregar o actualizar marcador en el mapa
-        function addOrUpdateMarker(data, type) {
-            const markerId = data.userId;
+        // Agregar o actualizar marcador
+      async function addOrUpdateMarker(data, type) {
+    try {
+        const markerId = data.userId;
+        const isCurrentUser = markerId === currentUser.id;
 
-            // Remover marcador existente si existe
-            if (markers.has(markerId)) {
-                map.removeLayer(markers.get(markerId));
-            }
-
-            // Determinar clase CSS según el tipo
-            let markerClass = '';
-            if (markerId === currentUser.id) {
-                markerClass = 'my-marker';
-            } else if (type === 'client') {
-                markerClass = 'client-marker';
-            } else if (type === 'driver') {
-                markerClass = 'driver-marker';
-            }
-
-            // Crear icono personalizado
-            const iconHtml = `
-                <div class="marker-icon ${markerClass}">
-                    <div class="orientation-arrow"></div>
-                </div>
-            `;
-
-            const customIcon = L.divIcon({
-                html: iconHtml,
-                className: 'custom-div-icon',
-                iconSize: [40, 55], // Tamaño mayor para incluir la flecha
-                iconAnchor: [20, 55], // El ancla en la punta de la flecha
-                popupAnchor: [0, -55] // Posición del popup arriba del marcador
-            });
-
-            // Crear marcador
-            const marker = L.marker([data.lat, data.lng], {
-                icon: customIcon,
-                userData: { ...data, type }
-            }).addTo(map);
-
-            // Crear popup con información
-            let popupContent = `
-    <div style="min-width: 200px;">
-        <h4>${type === 'client' ? '🙋‍♂️ Cliente' : '🏍️ Mototaxista'}</h4>
-             <p><strong>ID:</strong> ${data && data.userId ? data.userId.substring(0, 8) : 'N/A'}</p>
-
-
-        <p><strong>Hora:</strong> ${new Date(data.timestamp).toLocaleTimeString()}</p>
-`;
-
-            if (type === 'client') {
-                popupContent += `
-        ${data.destination ? `<p><strong>Destino:</strong> ${data.destination}</p>` : ''}
-        ${data.description ? `<p><strong>Detalles:</strong> ${data.description}</p>` : ''}
-        <div style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
-            <button onclick="acceptClientRequest('${data.userId}')"
-                style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-                ✅ Aceptar
-            </button>
-            <button onclick="initiateContact('${data.userId}', 'client')"
-                style="background: #17a2b8; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-                💬 Chatear
-            </button>
-
-        </div>
-    `;
-            } else if (type === 'driver') {
-                // Contenido para conductores (mantener el existente)
-                popupContent += `
-        ${data.description ? `<p><strong>Descripción:</strong> ${data.description}</p>` : ''}
-        ${data.price ? `<p><strong>Precio:</strong> S/ ${data.price}</p>` : ''}
-    `;
-            }
-
-            popupContent += '</div>';
-            if (type === 'client' && data.destination) {
-                popupContent += `<p><strong>Destino:</strong> ${data.destination}</p>`;
-            }
-
-            if (data.description) {
-                popupContent += `<p><strong>Descripción:</strong> ${data.description}</p>`;
-            }
-
-            if (type === 'driver' && data.price) {
-                popupContent += `<p><strong>Precio:</strong> S/ ${data.price}</p>`;
-            }
-
-            // Botón de contacto para todos los usuarios excepto uno mismo
-            if (currentUser.id !== data.userId) {
-                popupContent += `
-                    <button onclick="initiateContact('${data.userId}', '${type}')" class="contact-btn">
-                        💬 Contactar
-                    </button>
-                `;
-            }
-
-            popupContent += '</div>';
-            marker.bindPopup(popupContent);
-
-            // Guardar referencia del marcador
-            markers.set(markerId, marker);
-
-            // Si es el usuario actual, abrir popup automáticamente
-            if (markerId === currentUser.id) {
-                marker.openPopup();
-            }
+        // Determinar tipo de marcador
+        let markerType;
+        if (isCurrentUser) {
+            markerType = 'my';
+        } else if (type === 'client') {
+            markerType = 'client';
+        } else if (type === 'driver') {
+            markerType = 'driver';
+        } else {
+            markerType = type;
         }
 
+        // Remover marcador existente si existe
+        if (markers.has(markerId)) {
+            markers.get(markerId).element.map = null;
+            markers.delete(markerId);
+        }
+
+        // Crear el marcador personalizado
+        const customMarker = await createCustomMarkerIcon(markerType);
+
+        // Crear el AdvancedMarkerElement
+        const marker = new google.maps.marker.AdvancedMarkerElement({
+            position: { lat: data.lat, lng: data.lng },
+            map: map,
+            content: customMarker.element,
+            title: data.userId || 'Destino',
+            zIndex: isCurrentUser ? 1000 : undefined
+        });
+
+        // Asignar datos adicionales al marcador
+        marker.userData = { ...data, type: markerType };
+
+        // Crear contenido del InfoWindow
+        let content = `
+            <div class="info-window-content">
+                <h4>${type === 'client' ? '🙋‍♂️ Cliente' : '🏍️ Mototaxista'}</h4>
+                <p><strong>ID:</strong> ${data.userId.substring(0, 8)}</p>
+                <p><strong>Hora:</strong> ${new Date(data.timestamp).toLocaleTimeString()}</p>
+        `;
+
+        if (type === 'client' && data.destination) {
+            content += `<p><strong>Destino:</strong> ${data.destination}</p>`;
+        }
+
+        if (data.description) {
+            content += `<p><strong>Detalles:</strong> ${data.description}</p>`;
+        }
+
+        if (type === 'driver' && data.price) {
+            content += `<p><strong>Precio:</strong> S/ ${data.price}</p>`;
+        }
+
+        // Botones de acción
+        if (!isCurrentUser) {
+            content += `
+                <div class="info-window-actions">
+                    <button class="info-window-btn" onclick="window.acceptClientRequest('${data.userId}')">
+                        ✅ Aceptar
+                    </button>
+                    <button class="info-window-btn chat" onclick="window.initiateContact('${data.userId}', '${type}')">
+                        💬 Chatear
+                    </button>
+                </div>
+            `;
+        }
+
+        content += '</div>';
+
+        // Crear InfoWindow
+        const infoWindow = new google.maps.InfoWindow({
+            content: content
+        });
+
+        // Mostrar InfoWindow al hacer clic
+        marker.addListener('click', () => {
+            infoWindow.open(map, marker);
+        });
+
+        // Guardar referencia del marcador
+        markers.set(markerId, {
+            element: marker,
+            infoWindow: infoWindow,
+            type: markerType
+        });
+
+        // Si es el usuario actual, abrir popup automáticamente
+        if (isCurrentUser) {
+            infoWindow.open(map, marker);
+        }
+
+        return marker;
+    } catch (error) {
+        console.error('Error al crear/actualizar marcador:', error);
+        return null;
+    }
+}
+        // Función para el marcador de destino
+        function setDestination(lat, lng) {
+            destinationCoords = { lat, lng };
+
+            // Remover marcador anterior si existe
+            if (destinationMarker) {
+                destinationMarker.setMap(null);
+            }
+
+            // Crear marcador de destino
+            destinationMarker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                icon: createCustomMarkerIcon('destination'),
+                title: 'Destino seleccionado',
+                zIndex: 1000 // Para asegurar que esté encima de otros marcadores
+            });
+
+            // InfoWindow para el destino
+            const infoWindow = new google.maps.InfoWindow({
+                content: '<strong>🎯 Tu destino</strong>'
+            });
+
+            destinationMarker.addListener('click', () => {
+                infoWindow.open(map, destinationMarker);
+            });
+            infoWindow.open(map, destinationMarker);
+
+            // Dibujar ruta
+            drawRoute();
+
+            // Actualizar UI
+            selectingDestination = false;
+            document.getElementById('destinationSelector').classList.remove('active');
+            document.getElementById('destinationSelector').innerHTML =
+                '<p>✅ <strong>Destino seleccionado</strong></p>';
+
+            updateFABs();
+        }
         // Remover marcador
         function removeMarker(markerId) {
             if (markers.has(markerId)) {
-                map.removeLayer(markers.get(markerId));
+                markers.get(markerId).setMap(null);
                 markers.delete(markerId);
+            }
+            if (infoWindows.has(markerId)) {
+                infoWindows.get(markerId).close();
+                infoWindows.delete(markerId);
             }
         }
 
@@ -2626,7 +2110,6 @@
                 content += `<p>💰 S/ ${data.price}</p>`;
             }
 
-            // Botones de acción
             if (currentUser.type !== type && currentUser.id !== data.userId && currentUser.status === 'waiting') {
                 content += `
                     <button class="accept-btn">
@@ -2640,7 +2123,6 @@
 
             requestItem.innerHTML = content;
 
-            // Insertar ordenado por distancia
             const items = requestsList.querySelectorAll('.request-item');
             let inserted = false;
 
@@ -2683,25 +2165,21 @@
 
         // Manejar mensajes de rutas
         function handleRouteMessage(data) {
-            // Implementar actualización de rutas en tiempo real si es necesario
+            // Implementar si es necesario
         }
 
         // Manejar mensajes directos
         function handleDirectMessage(data) {
             if (data.targetId === currentUser.id) {
                 if (data.type === 'chat') {
-                    // Mensaje de chat
                     handleChatMessage(data);
                 } else {
-                    // Otros tipos de mensajes
                     showNotification(data.message, data.type || 'info');
 
-                    // Si es una solicitud cercana, resaltar en el mapa
                     if (data.type === 'nearby_request' && data.data) {
                         highlightRequest(data.data);
                     }
 
-                    // Si es una solicitud de contacto
                     if (data.type === 'contact_request') {
                         handleContactRequest(data);
                     }
@@ -2716,17 +2194,14 @@
                 type: userType
             };
 
-            // Verificar si ya hay un chat activo
             if (chatPartner && chatPartner.id === userId) {
                 openChat();
                 return;
             }
 
-            // Establecer nuevo chat
             chatPartner = targetUser;
             chatMessages = [];
 
-            // Enviar solicitud de contacto
             const contactRequest = {
                 targetId: userId,
                 senderId: currentUser.id,
@@ -2738,10 +2213,8 @@
 
             publishMessage(MQTT_CONFIG.topics.messages, contactRequest);
 
-            // Abrir chat
             openChat();
 
-            // Agregar mensaje de sistema
             addSystemMessage('Chat iniciado. Puedes enviar mensajes al ' +
                 (userType === 'client' ? 'cliente' : 'taxista'));
         };
@@ -2756,10 +2229,8 @@
                 chatMessages = [];
             }
 
-            // Mostrar botón de chat si no está visible
             updateChatButton();
 
-            // Incrementar contador de mensajes no leídos
             if (!document.getElementById('chatContainer').classList.contains('active')) {
                 unreadMessages++;
                 updateUnreadIndicator();
@@ -2787,7 +2258,6 @@
                     updateUnreadIndicator();
                 }
 
-                // Sonido de notificación
                 playNotificationSound();
             }
         }
@@ -2797,21 +2267,17 @@
             const chatContainer = document.getElementById('chatContainer');
             chatContainer.classList.add('active');
 
-            // Actualizar nombre del chat
             const partnerType = chatPartner.type === 'client' ? 'Cliente' : 'Taxista';
             document.getElementById('chatPartnerName').textContent = `${partnerType} ${chatPartner.id.substring(0, 6)}`;
 
-            // Limpiar mensajes no leídos
             unreadMessages = 0;
             updateUnreadIndicator();
 
-            // Mostrar mensajes existentes
             displayAllMessages();
 
-            // Focus en input
             document.getElementById('chatInput').focus();
 
-            toggleFABMenu(); // Cerrar menú FAB si está abierto
+            toggleFABMenu();
         };
 
         // Cerrar chat
@@ -2834,12 +2300,10 @@
                 type: 'sent'
             };
 
-            // Agregar a mensajes locales
             chatMessages.push(message);
             displayMessage(message);
             scrollToBottom();
 
-            // Enviar por MQTT
             const chatData = {
                 targetId: chatPartner.id,
                 senderId: currentUser.id,
@@ -2850,7 +2314,6 @@
 
             publishMessage(MQTT_CONFIG.topics.messages, chatData);
 
-            // Limpiar input
             input.value = '';
         };
 
@@ -2925,14 +2388,6 @@
 
         // Actualizar botón de chat
         function updateChatButton() {
-            const fabChat = document.getElementById('fabChat');
-
-            if (chatPartner) {
-                fabChat.classList.add('show');
-            } else {
-                fabChat.classList.remove('show');
-            }
-
             updateFABs();
         }
 
@@ -2950,7 +2405,6 @@
 
         // Reproducir sonido de notificación
         function playNotificationSound() {
-            // Crear un simple beep usando Web Audio API
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 const oscillator = audioContext.createOscillator();
@@ -2973,14 +2427,9 @@
         function highlightRequest(requestData) {
             const marker = markers.get(requestData.userId);
             if (marker) {
-                marker.openPopup();
-                // Agregar efecto visual temporal
-                const element = marker.getElement();
-                if (element) {
-                    element.classList.add('pulse');
-                    setTimeout(() => {
-                        element.classList.remove('pulse');
-                    }, 5000);
+                const infoWindow = infoWindows.get(requestData.userId);
+                if (infoWindow) {
+                    infoWindow.open(map, marker);
                 }
             }
         }
@@ -2993,17 +2442,17 @@
             chatPartner = null;
             chatMessages = [];
 
-            // Limpiar mapa
             clearRoute();
 
-            // Recargar marcadores
             markers.forEach((marker, markerId) => {
                 if (markerId !== currentUser.id) {
-                    map.removeLayer(marker);
+                    marker.setMap(null);
                 }
             });
             markers.clear();
-            markers.set(currentUser.id, markers.get(currentUser.id));
+
+            // Mantener solo el marcador del usuario actual
+            addOrUpdateMarker(currentUser, currentUser.type);
 
             updateUI();
             updateFABs();
@@ -3019,14 +2468,11 @@
             const userId = document.getElementById('userId');
             const userStatus = document.getElementById('userStatus');
 
-            // Actualizar información del usuario
             userId.textContent = currentUser.id.substring(0, 8);
             userStatus.textContent = getStatusText(currentUser.status);
 
-            // Deshabilitar cambio de tipo durante viaje
             userTypeSelect.disabled = currentUser.status === 'in_trip' || currentUser.status === 'requesting';
 
-            // Actualizar según tipo de usuario
             if (currentUser.type === 'client') {
                 formTitle.textContent = 'Solicitar Taxi';
                 priceGroup.style.display = 'none';
@@ -3035,7 +2481,6 @@
                 priceGroup.style.display = 'block';
             }
 
-            // Deshabilitar controles durante viaje
             if (currentUser.status === 'in_trip' || currentUser.status === 'requesting') {
                 document.getElementById('destination').disabled = true;
                 document.getElementById('description').disabled = true;
@@ -3073,11 +2518,9 @@
 
         // Mostrar notificación
         function showNotification(message, type = 'info') {
-            // Crear elemento de notificación
             const notification = document.createElement('div');
             notification.className = 'notification';
 
-            // Colores según tipo
             const colors = {
                 'success': '#28a745',
                 'error': '#dc3545',
@@ -3090,12 +2533,10 @@
 
             document.body.appendChild(notification);
 
-            // Animación de entrada
             setTimeout(() => {
                 notification.classList.add('show');
             }, 100);
 
-            // Remover después de 4 segundos
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => {
@@ -3106,7 +2547,7 @@
             }, 4000);
         }
 
-        // Calcular distancia entre dos puntos (fórmula de Haversine)
+        // Calcular distancia entre dos puntos
         function calculateDistance(lat1, lng1, lat2, lng2) {
             const R = 6371; // Radio de la Tierra en km
             const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -3119,7 +2560,7 @@
             return R * c;
         }
 
-        // Actualizar ubicación en tiempo real (cada 30 segundos)
+        // Actualizar ubicación en tiempo real
         function startLocationTracking() {
             setInterval(() => {
                 if (navigator.geolocation && (currentUser.status === 'available' || currentUser.status === 'in_trip')) {
@@ -3128,12 +2569,10 @@
                             const newLat = position.coords.latitude;
                             const newLng = position.coords.longitude;
 
-                            // Solo actualizar si la posición cambió significativamente
                             const distance = calculateDistance(currentUser.lat, currentUser.lng, newLat, newLng);
-                            if (distance > 0.01) { // ~10 metros
+                            if (distance > 0.01) {
                                 updateLocation(newLat, newLng);
 
-                                // Publicar nueva ubicación si está activo
                                 if (currentRequest) {
                                     const locationUpdate = {
                                         ...currentRequest,
@@ -3154,10 +2593,10 @@
                         }
                     );
                 }
-            }, 30000); // 30 segundos
+            }, 30000);
         }
 
-        // Iniciar seguimiento de ubicación al cargar
+        // Iniciar seguimiento de ubicación
         setTimeout(startLocationTracking, 5000);
 
         // Limpiar al cerrar la ventana
@@ -3169,9 +2608,6 @@
                 mqttClient.disconnect();
             }
         });
-
-
-
     </script>
 </body>
 
