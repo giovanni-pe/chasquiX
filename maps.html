@@ -11,12 +11,10 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body, html {
             height: 100%;
             width: 100%;
         }
-
         #map {
             height: 100vh;
             width: 100vw;
@@ -29,11 +27,41 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var map = L.map('map').setView([-9.2945, -76.0073], 14);
+            // Depuración 1: Verifica si el DOM está listo
+            console.log("DOM cargado correctamente");
+            alert("DOM cargado"); // Opcional para WebView
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
+            try {
+                // Depuración 2: Verifica si Leaflet está cargado
+                if (typeof L === 'undefined') {
+                    console.error("Leaflet no se cargó correctamente");
+                    alert("Error: Leaflet no está disponible");
+                    return;
+                }
+                console.log("Leaflet cargado correctamente");
+
+                var map = L.map('map').setView([-9.2945, -76.0073], 14);
+                console.log("Mapa inicializado");
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Depuración 3: Verifica si los tiles se cargan
+                map.on('load', function() {
+                    console.log("Mapa y tiles cargados con éxito");
+                    alert("Mapa cargado"); // Opcional
+                });
+
+                map.on('error', function(err) {
+                    console.error("Error en el mapa:", err.message);
+                    alert("Error al cargar el mapa: " + err.message);
+                });
+
+            } catch (err) {
+                console.error("Error inesperado:", err.message);
+                alert("Error crítico: " + err.message);
+            }
         });
     </script>
 </body>
