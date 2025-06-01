@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Simple - Test</title>
+    <title>Mapa Simple</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
@@ -15,7 +15,6 @@
         body, html {
             height: 100%;
             width: 100%;
-            overflow: hidden;
         }
 
         #map {
@@ -29,81 +28,12 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Variables globales
-        let map;
-        let userMarker = null;
-
-        // Inicializar cuando cargue la página
         document.addEventListener('DOMContentLoaded', function() {
-            initMap();
-            getUserLocation();
-        });
+            var map = L.map('map').setView([-9.2945, -76.0073], 14);
 
-        // Inicializar el mapa
-        function initMap() {
-            // Coordenadas de Tingo María, Perú
-            const tingoMaria = [-9.2945, -76.0073];
-
-            map = L.map('map').setView(tingoMaria, 14);
-
-            // Agregar tiles del mapa
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
-
-            console.log('Mapa inicializado correctamente');
-        }
-
-        // Obtener ubicación del usuario
-        function getUserLocation() {
-            if ("geolocation" in navigator) {
-                console.log('Solicitando ubicación...');
-
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-
-                        console.log('Ubicación obtenida:', lat, lng);
-
-                        // Centrar el mapa en la ubicación del usuario
-                        map.setView([lat, lng], 16);
-
-                        // Agregar marcador de usuario
-                        if (userMarker) {
-                            map.removeLayer(userMarker);
-                        }
-
-                        userMarker = L.marker([lat, lng])
-                            .addTo(map)
-                            .bindPopup('📍 Tu ubicación actual')
-                            .openPopup();
-                    },
-                    function(error) {
-                        console.error('Error obteniendo ubicación:', error);
-                        alert('No se pudo obtener tu ubicación. Error: ' + error.message);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 15000,
-                        maximumAge: 300000
-                    }
-                );
-            } else {
-                console.error('Geolocalización no disponible');
-                alert('Tu navegador no soporta geolocalización');
-            }
-        }
-
-        // Evento de click en el mapa
-        map?.on('click', function(e) {
-            console.log('Click en mapa:', e.latlng.lat, e.latlng.lng);
-
-            // Agregar marcador donde se hizo click
-            L.marker([e.latlng.lat, e.latlng.lng])
-                .addTo(map)
-                .bindPopup(`📍 Coordenadas:<br>Lat: ${e.latlng.lat.toFixed(6)}<br>Lng: ${e.latlng.lng.toFixed(6)}`)
-                .openPopup();
         });
     </script>
 </body>
