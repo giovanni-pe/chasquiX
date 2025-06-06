@@ -5,8 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChasquiX - Sistema de Taxi Móvil</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <!-- Mapbox CSS -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet' />
+    <!-- Mapbox Geocoder CSS -->
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         * {
@@ -165,6 +168,87 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 13px;
+        }
+
+        /* Estilos para el geocoder de Mapbox */
+        .mapboxgl-ctrl-geocoder {
+            width: 100% !important;
+            max-width: none !important;
+            margin-bottom: 10px;
+        }
+
+        .destination-search {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #764ba2;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            pointer-events: none;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .search-result-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .search-result-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .result-address {
+            color: #666;
+            font-size: 12px;
+            margin-top: 2px;
         }
 
         .btn {
@@ -329,83 +413,6 @@
             100% {
                 transform: scale(1);
             }
-        }
-
-        /* Estilos para los iconos del mapa */
-        .custom-div-icon {
-            background: none;
-            border: none;
-        }
-
-        .marker-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        .my-marker {
-            background-color: #764ba2;
-            border: 3px solid white;
-            animation: pulse 2s infinite;
-        }
-
-        .my-marker::after {
-            content: 'Yo';
-            color: white;
-            font-weight: bold;
-            font-size: 10px;
-        }
-
-        .marker-pin::after {
-            content: '';
-            width: 10px;
-            height: 10px;
-            margin: 5px 0 0 5px;
-            background: #fff;
-            position: absolute;
-            border-radius: 50%;
-        }
-
-        .client-marker {
-            background-color: #28a745;
-            border: 2px solid white;
-        }
-
-        .client-marker::after {
-            content: '🙋';
-            font-size: 14px;
-        }
-
-        /* Marcador de conductor */
-        .driver-marker {
-            background-color: #007bff;
-            border: 2px solid white;
-        }
-
-        .driver-marker::after {
-            content: '🏍';
-            font-size: 14px;
-        }
-
-        /* Marcador de destino */
-        .destination-marker {
-            background-color: #ff6347;
-            border: 2px solid white;
-        }
-
-        .destination-marker::after {
-            content: '📍';
-            font-size: 14px;
-        }
-
-        /* Ocultar controles de ruta de Leaflet Routing Machine */
-        .leaflet-routing-container {
-            display: none;
         }
 
         .distance-badge {
@@ -632,34 +639,6 @@
             font-size: 11px;
         }
 
-        /* Flecha de orientación */
-        .orientation-arrow {
-            position: absolute;
-            bottom: -12px;
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 12px solid currentColor;
-            filter: drop-shadow(0 -1px 1px rgba(0, 0, 0, 0.3));
-        }
-
-        .my-marker .orientation-arrow {
-            border-top-color: #764ba2;
-        }
-
-        .client-marker .orientation-arrow {
-            border-top-color: #28a745;
-        }
-
-        .driver-marker .orientation-arrow {
-            border-top-color: #007bff;
-        }
-
-        .destination-marker .orientation-arrow {
-            border-top-color: #ff6347;
-        }
-
         /* FABs (Floating Action Buttons) */
         /* Estilos FAB simplificados */
         .fab-container {
@@ -807,7 +786,95 @@
             }
         }
 
-        /* Estilos para FABs con etiquetas */
+        /* Estilos para el marker personalizado de Mapbox */
+        .mapbox-marker {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            position: relative;
+        }
+
+        .marker-user {
+            background-color: #764ba2;
+            animation: pulse 2s infinite;
+        }
+
+        .marker-client {
+            background-color: #28a745;
+        }
+
+        .marker-driver {
+            background-color: #007bff;
+        }
+
+        .marker-destination {
+            background-color: #ff6347;
+        }
+
+        /* Ocultar los controles de navegación de Mapbox para un look más limpio */
+        .mapboxgl-ctrl-bottom-left,
+        .mapboxgl-ctrl-bottom-right {
+            display: none;
+        }
+
+        /* Personalizar el estilo del geocoder */
+        .mapboxgl-ctrl-geocoder--input {
+            font-size: 14px;
+            padding: 8px 35px 8px 10px;
+        }
+
+        .clear-destination {
+            position: absolute;
+            right: 35px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 16px;
+            display: none;
+        }
+
+        .clear-destination.show {
+            display: block;
+        }
+
+        .selected-destination {
+            background: #e8f5e8;
+            border: 2px solid #28a745;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .selected-destination.show {
+            display: block;
+        }
+
+        .destination-info {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .destination-name {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .destination-address {
+            color: #666;
+            margin-top: 2px;
+        }
     </style>
 </head>
 
@@ -845,19 +912,47 @@
             <div class="request-form">
                 <h3 id="formTitle">Solicitar Taxi</h3>
 
+                <!-- Información del destino seleccionado -->
+                <div id="selectedDestination" class="selected-destination">
+                    <div class="destination-info">
+                        <div class="destination-name" id="destinationName"></div>
+                        <div class="destination-address" id="destinationAddress"></div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="clearDestination()" style="margin-top: 8px; padding: 4px 8px; font-size: 12px;">
+                        Cambiar Destino
+                    </button>
+                </div>
+
+                <!-- Búsqueda de destino -->
+                <div class="destination-search">
+                    <label>Buscar Destino:</label>
+                    <div class="search-container">
+                        <input type="text"
+                               id="destinationSearch"
+                               class="search-input"
+                               placeholder="Buscar lugar en Tingo María..."
+                               autocomplete="off">
+                        <i class="fas fa-search search-icon"></i>
+                        <button type="button" class="clear-destination" id="clearDestinationBtn" onclick="clearDestination()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div id="searchResults" class="search-results"></div>
+                    </div>
+                </div>
+
                 <div id="destinationSelector" class="destination-selector">
-                    <p>📍 <strong>Click en el mapa para seleccionar destino</strong></p>
+                    <p>📍 <strong>Busca tu destino arriba o haz click en el mapa</strong></p>
                 </div>
 
                 <div class="form-group">
-                    <label for="destination">Destino:</label>
-                    <textarea id="destination" rows="2" placeholder="Describe tu destino en Tingo María"></textarea>
+                    <label for="destination">Detalles del destino:</label>
+                    <textarea id="destination" rows="2" placeholder="Referencia adicional (ej: frente al mercado)"></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Descripción adicional:</label>
                     <textarea id="description" rows="2"
-                        placeholder="Ej: Frente al mercado central, llevar equipaje..."></textarea>
+                        placeholder="Ej: Llevar equipaje, viaje de emergencia..."></textarea>
                 </div>
 
                 <div class="form-group" id="priceGroup" style="display: none;">
@@ -903,7 +998,6 @@
         </div>
     </div>
 
-    <!-- FABs (Floating Action Buttons) -->
     <!-- FAB Container -->
     <div class="fab-container" id="fabContainer">
         <!-- FAB Principal (siempre visible) -->
@@ -954,10 +1048,16 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <!-- Mapbox JS -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
+    <!-- Mapbox Geocoder JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <!-- MQTT -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     <script>
+        // Token de Mapbox
+        mapboxgl.accessToken = 'pk.eyJ1IjoidGVsbG8tNjkiLCJhIjoiY21ianVwaWhkMDU2NTJsb2s4OGttZ3NhYSJ9.sZirrZDCxooouLCPy_DJAQ';
+
         // Configuración global
         const MQTT_CONFIG = {
             host: 'mqttv2.smartpx.org',
@@ -974,6 +1074,7 @@
         // Variables globales
         let map;
         let mqttClient;
+        let geocoder;
         let currentUser = {
             id: 'user_' + Date.now(),
             type: 'client',
@@ -982,45 +1083,397 @@
             status: 'waiting'
         };
         let markers = new Map();
-        let routeControl = null;
+        let currentRoute = null;
         let currentRequest = null;
         let destinationMarker = null;
         let destinationCoords = null;
+        let destinationInfo = null;
         let selectingDestination = false;
         let activeAssignment = null;
         let chatMessages = [];
         let chatPartner = null;
         let unreadMessages = 0;
         let fabMenuOpen = false;
+        let searchTimeout = null;
 
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function () {
             initMap();
             initMQTT();
             initEventListeners();
+            initDestinationSearch();
             getUserLocation();
             updateUI();
             updateFABs();
         });
 
-        // Inicializar el mapa
+        // Inicializar el mapa con Mapbox
         function initMap() {
             // Coordenadas de Tingo María, Perú
-            const tingoMaria = [-9.2945, -76.0073];
+            const tingoMaria = [-76.0073, -9.2945]; // [lng, lat] para Mapbox
 
-            map = L.map('map').setView(tingoMaria, 14);
+            map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v12',
+                center: tingoMaria,
+                zoom: 14,
+                pitch: 0,
+                bearing: 0
+            });
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
+            // Agregar controles de navegación
+            map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
             // Evento para hacer clic en el mapa
             map.on('click', function (e) {
                 if (selectingDestination) {
-                    setDestination(e.latlng.lat, e.latlng.lng);
-                    toggleFABMenu(); // Cerrar menú después de seleccionar destino
+                    setDestinationFromMap(e.lngLat.lng, e.lngLat.lat);
                 }
             });
+
+            // Cuando el mapa esté cargado
+            map.on('load', function() {
+                console.log('Mapa Mapbox cargado correctamente');
+            });
+        }
+
+        // Inicializar búsqueda de destinos
+        function initDestinationSearch() {
+            const searchInput = document.getElementById('destinationSearch');
+            const searchResults = document.getElementById('searchResults');
+
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.trim();
+
+                // Limpiar timeout anterior
+                if (searchTimeout) {
+                    clearTimeout(searchTimeout);
+                }
+
+                if (query.length < 3) {
+                    hideSearchResults();
+                    return;
+                }
+
+                // Debounce de 300ms
+                searchTimeout = setTimeout(() => {
+                    searchPlaces(query);
+                }, 300);
+            });
+
+            // Cerrar resultados al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-container')) {
+                    hideSearchResults();
+                }
+            });
+        }
+
+        // Buscar lugares con Mapbox Geocoding API
+        async function searchPlaces(query) {
+            try {
+                // Bounds de Tingo María (aproximado)
+                const bounds = [-76.1, -9.4, -75.9, -9.2]; // [minLng, minLat, maxLng, maxLat]
+
+                const response = await fetch(
+                    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
+                    `access_token=${mapboxgl.accessToken}&` +
+                    `bbox=${bounds.join(',')}&` +
+                    `proximity=-76.0073,-9.2945&` +
+                    `country=PE&` +
+                    `language=es&` +
+                    `limit=5`
+                );
+
+                const data = await response.json();
+                displaySearchResults(data.features);
+            } catch (error) {
+                console.error('Error buscando lugares:', error);
+            }
+        }
+
+        // Mostrar resultados de búsqueda
+        function displaySearchResults(places) {
+            const searchResults = document.getElementById('searchResults');
+
+            if (places.length === 0) {
+                searchResults.innerHTML = '<div class="search-result-item">No se encontraron resultados</div>';
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            searchResults.innerHTML = '';
+
+            places.forEach(place => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'search-result-item';
+
+                const title = place.text || place.place_name;
+                const address = place.place_name;
+
+                resultItem.innerHTML = `
+                    <div class="result-title">${title}</div>
+                    <div class="result-address">${address}</div>
+                `;
+
+                resultItem.addEventListener('click', () => {
+                    selectDestination(place);
+                });
+
+                searchResults.appendChild(resultItem);
+            });
+
+            searchResults.style.display = 'block';
+        }
+
+        // Ocultar resultados de búsqueda
+        function hideSearchResults() {
+            document.getElementById('searchResults').style.display = 'none';
+        }
+
+        // Seleccionar destino de la búsqueda
+        function selectDestination(place) {
+            const coords = place.center; // [lng, lat]
+
+            destinationCoords = {
+                lat: coords[1],
+                lng: coords[0]
+            };
+
+            destinationInfo = {
+                name: place.text || place.place_name.split(',')[0],
+                address: place.place_name,
+                coordinates: coords
+            };
+
+            // Actualizar UI
+            document.getElementById('destinationSearch').value = destinationInfo.name;
+            document.getElementById('destinationName').textContent = destinationInfo.name;
+            document.getElementById('destinationAddress').textContent = destinationInfo.address;
+            document.getElementById('selectedDestination').classList.add('show');
+            document.getElementById('clearDestinationBtn').classList.add('show');
+
+            hideSearchResults();
+
+            // Agregar marcador en el mapa
+            addDestinationMarker(destinationCoords.lng, destinationCoords.lat);
+
+            // Dibujar ruta
+            if (currentUser.lat && currentUser.lng) {
+                drawRoute();
+            }
+
+            // Actualizar selector
+            document.getElementById('destinationSelector').classList.add('active');
+            document.getElementById('destinationSelector').innerHTML =
+                '<p>✅ <strong>Destino seleccionado</strong></p>';
+
+            updateFABs();
+            showNotification('Destino seleccionado: ' + destinationInfo.name, 'success');
+        }
+
+        // Establecer destino desde el mapa
+        function setDestinationFromMap(lng, lat) {
+            destinationCoords = { lat, lng };
+
+            // Geocodificación inversa para obtener la dirección
+            reverseGeocode(lng, lat);
+
+            // Agregar marcador
+            addDestinationMarker(lng, lat);
+
+            // Dibujar ruta
+            if (currentUser.lat && currentUser.lng) {
+                drawRoute();
+            }
+
+            // Actualizar UI
+            selectingDestination = false;
+            map.getContainer().style.cursor = '';
+            document.getElementById('destinationSelector').classList.remove('active');
+            document.getElementById('destinationSelector').innerHTML =
+                '<p>✅ <strong>Destino seleccionado en el mapa</strong></p>';
+
+            updateFABs();
+        }
+
+        // Geocodificación inversa
+        async function reverseGeocode(lng, lat) {
+            try {
+                const response = await fetch(
+                    `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?` +
+                    `access_token=${mapboxgl.accessToken}&` +
+                    `language=es&` +
+                    `limit=1`
+                );
+
+                const data = await response.json();
+
+                if (data.features && data.features.length > 0) {
+                    const place = data.features[0];
+
+                    destinationInfo = {
+                        name: place.text || 'Ubicación seleccionada',
+                        address: place.place_name,
+                        coordinates: [lng, lat]
+                    };
+
+                    // Actualizar UI
+                    document.getElementById('destinationSearch').value = destinationInfo.name;
+                    document.getElementById('destinationName').textContent = destinationInfo.name;
+                    document.getElementById('destinationAddress').textContent = destinationInfo.address;
+                    document.getElementById('selectedDestination').classList.add('show');
+                    document.getElementById('clearDestinationBtn').classList.add('show');
+                }
+            } catch (error) {
+                console.error('Error en geocodificación inversa:', error);
+
+                // Fallback sin geocodificación
+                destinationInfo = {
+                    name: 'Ubicación personalizada',
+                    address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+                    coordinates: [lng, lat]
+                };
+
+                document.getElementById('destinationSearch').value = destinationInfo.name;
+                document.getElementById('destinationName').textContent = destinationInfo.name;
+                document.getElementById('destinationAddress').textContent = destinationInfo.address;
+                document.getElementById('selectedDestination').classList.add('show');
+                document.getElementById('clearDestinationBtn').classList.add('show');
+            }
+        }
+
+        // Agregar marcador de destino
+        function addDestinationMarker(lng, lat) {
+            // Remover marcador anterior si existe
+            if (destinationMarker) {
+                destinationMarker.remove();
+            }
+
+            // Crear elemento del marcador
+            const el = document.createElement('div');
+            el.className = 'mapbox-marker marker-destination';
+            el.innerHTML = '📍';
+
+            // Crear marcador
+            destinationMarker = new mapboxgl.Marker(el)
+                .setLngLat([lng, lat])
+                .setPopup(new mapboxgl.Popup().setHTML(
+                    `<strong>🎯 Tu destino</strong><br>${destinationInfo?.name || 'Destino seleccionado'}`
+                ))
+                .addTo(map);
+
+            // Centrar mapa para mostrar origen y destino
+            if (currentUser.lat && currentUser.lng) {
+                const bounds = new mapboxgl.LngLatBounds();
+                bounds.extend([currentUser.lng, currentUser.lat]);
+                bounds.extend([lng, lat]);
+                map.fitBounds(bounds, { padding: 50 });
+            }
+        }
+
+        // Limpiar destino
+        function clearDestination() {
+            destinationCoords = null;
+            destinationInfo = null;
+
+            // Limpiar UI
+            document.getElementById('destinationSearch').value = '';
+            document.getElementById('selectedDestination').classList.remove('show');
+            document.getElementById('clearDestinationBtn').classList.remove('show');
+            document.getElementById('destinationSelector').classList.remove('active');
+            document.getElementById('destinationSelector').innerHTML =
+                '<p>📍 <strong>Busca tu destino arriba o haz click en el mapa</strong></p>';
+
+            // Remover marcador
+            if (destinationMarker) {
+                destinationMarker.remove();
+                destinationMarker = null;
+            }
+
+            // Limpiar ruta
+            clearRoute();
+            hideSearchResults();
+            updateFABs();
+        }
+
+        // Dibujar ruta usando Mapbox Directions API
+        async function drawRoute() {
+            if (!currentUser.lat || !currentUser.lng || !destinationCoords) {
+                return;
+            }
+
+            try {
+                // Limpiar ruta anterior
+                clearRoute();
+
+                const start = [currentUser.lng, currentUser.lat];
+                const end = [destinationCoords.lng, destinationCoords.lat];
+
+                const response = await fetch(
+                    `https://api.mapbox.com/directions/v5/mapbox/driving/${start.join(',')};${end.join(',')}?` +
+                    `geometries=geojson&` +
+                    `access_token=${mapboxgl.accessToken}&` +
+                    `language=es`
+                );
+
+                const data = await response.json();
+
+                if (data.routes && data.routes.length > 0) {
+                    const route = data.routes[0];
+
+                    // Agregar ruta al mapa
+                    map.addSource('route', {
+                        type: 'geojson',
+                        data: {
+                            type: 'Feature',
+                            properties: {},
+                            geometry: route.geometry
+                        }
+                    });
+
+                    map.addLayer({
+                        id: 'route',
+                        type: 'line',
+                        source: 'route',
+                        layout: {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                        },
+                        paint: {
+                            'line-color': '#764ba2',
+                            'line-width': 4,
+                            'line-opacity': 0.8
+                        }
+                    });
+
+                    // Mostrar información de la ruta
+                    const distance = (route.distance / 1000).toFixed(2);
+                    const duration = Math.round(route.duration / 60);
+
+                    document.getElementById('routeInfo').style.display = 'block';
+                    document.getElementById('routeDistance').textContent = distance + ' km';
+                    document.getElementById('routeDuration').textContent = duration + ' min';
+
+                    currentRoute = route;
+                }
+            } catch (error) {
+                console.error('Error dibujando ruta:', error);
+                showNotification('Error calculando la ruta', 'error');
+            }
+        }
+
+        // Limpiar ruta del mapa
+        function clearRoute() {
+            if (map.getLayer('route')) {
+                map.removeLayer('route');
+            }
+            if (map.getSource('route')) {
+                map.removeSource('route');
+            }
+
+            currentRoute = null;
+            document.getElementById('routeInfo').style.display = 'none';
         }
 
         // Inicializar MQTT
@@ -1145,7 +1598,7 @@
             }
         }
 
-        // Manejar mensajes de conductores con solicitudes de servicio
+        // Manejar mensajes de conductores
         function handleDriverMessage(data) {
             if (data.action === 'available') {
                 if (data.userId !== currentUser.id) {
@@ -1170,7 +1623,7 @@
             }
         }
 
-        // Nueva función para actualizar lista de clientes
+        // Actualizar lista de clientes
         function updateClientList() {
             const requestsList = document.getElementById('requestsList');
             requestsList.innerHTML = '<h3>👥 Clientes Solicitando Taxi</h3>';
@@ -1178,7 +1631,7 @@
             let hasClients = false;
 
             markers.forEach((marker, userId) => {
-                const userData = marker.options.userData;
+                const userData = marker.userData;
 
                 if (userData.type === 'client' && userData.action === 'request' && userId !== currentUser.id) {
                     hasClients = true;
@@ -1191,7 +1644,7 @@
             }
         }
 
-        // Nueva función para añadir cliente a la lista
+        // Agregar cliente a la lista
         function addClientToList(clientData, clientId) {
             const requestsList = document.getElementById('requestsList');
             const distance = calculateDistance(
@@ -1205,9 +1658,7 @@
 
             clientItem.innerHTML = `
                 <div class="client-header">
-                         <p><strong>ID:</strong> ${data && data.userId ? data.userId.substring(0, 8) : 'N/A'}</p>
-
-
+                    <p><strong>ID:</strong> ${clientData.userId ? clientData.userId.substring(0, 8) : 'N/A'}</p>
                     <span class="distance-badge">${distance.toFixed(1)} km</span>
                 </div>
                 <p><strong>Ubicación:</strong> ${clientData.lat.toFixed(4)}, ${clientData.lng.toFixed(4)}</p>
@@ -1226,9 +1677,9 @@
             requestsList.appendChild(clientItem);
         }
 
-        // Nueva función para aceptar cliente
+        // Aceptar solicitud de cliente
         window.acceptClientRequest = function (clientId) {
-            const clientData = markers.get(clientId)?.options?.userData;
+            const clientData = markers.get(clientId)?.userData;
 
             if (!clientData) {
                 showNotification('Cliente no encontrado', 'error');
@@ -1261,7 +1712,7 @@
             initiateChatWithClient(clientId);
         };
 
-        // Nueva función para iniciar chat con cliente
+        // Iniciar chat con cliente
         window.initiateChatWithClient = function (clientId) {
             chatPartner = {
                 id: clientId,
@@ -1285,7 +1736,7 @@
             publishMessage(MQTT_CONFIG.topics.messages, chatNotification);
         };
 
-        // Manejar cuando un conductor solicita a un cliente
+        // Manejar solicitud de conductor a cliente
         function handleDriverRequestToClient(data) {
             showNotification(`Conductor ${data.userId} quiere ofrecerte servicio`, 'info');
 
@@ -1323,7 +1774,7 @@
                 // Cliente: ocultar otros taxistas
                 markers.forEach((marker, markerId) => {
                     if (markerId !== data.driverId && markerId !== currentUser.id) {
-                        map.removeLayer(marker);
+                        marker.remove();
                     }
                 });
 
@@ -1369,6 +1820,67 @@
             updateFABs();
         }
 
+        // Dibujar ruta asignada para conductor
+        async function drawAssignedRoute(clientLocation, destination) {
+            try {
+                clearRoute();
+
+                const waypoints = [
+                    [currentUser.lng, currentUser.lat],
+                    [clientLocation.lng, clientLocation.lat]
+                ];
+
+                if (destination) {
+                    waypoints.push([destination.lng, destination.lat]);
+                }
+
+                // Crear ruta multi-punto
+                const response = await fetch(
+                    `https://api.mapbox.com/directions/v5/mapbox/driving/${waypoints.map(w => w.join(',')).join(';')}?` +
+                    `geometries=geojson&` +
+                    `access_token=${mapboxgl.accessToken}&` +
+                    `language=es`
+                );
+
+                const data = await response.json();
+
+                if (data.routes && data.routes.length > 0) {
+                    const route = data.routes[0];
+
+                    map.addSource('route', {
+                        type: 'geojson',
+                        data: {
+                            type: 'Feature',
+                            properties: {},
+                            geometry: route.geometry
+                        }
+                    });
+
+                    map.addLayer({
+                        id: 'route',
+                        type: 'line',
+                        source: 'route',
+                        layout: {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                        },
+                        paint: {
+                            'line-color': '#28a745',
+                            'line-width': 5,
+                            'line-opacity': 0.8
+                        }
+                    });
+
+                    // Ajustar vista
+                    const bounds = new mapboxgl.LngLatBounds();
+                    waypoints.forEach(point => bounds.extend(point));
+                    map.fitBounds(bounds, { padding: 50 });
+                }
+            } catch (error) {
+                console.error('Error dibujando ruta asignada:', error);
+            }
+        }
+
         // Inicializar event listeners
         function initEventListeners() {
             document.getElementById('userTypeSelect').addEventListener('change', function () {
@@ -1393,7 +1905,6 @@
 
             // FAB Secondary buttons
             document.getElementById('fabDestination').addEventListener('click', startDestinationSelection);
-
             document.getElementById('fabCancel').addEventListener('click', cancelCurrentRequest);
             document.getElementById('fabConfirm').addEventListener('click', confirmAndSendRequest);
             document.getElementById('fabChat').addEventListener('click', openChat);
@@ -1473,6 +1984,7 @@
             document.getElementById('unreadIndicator').textContent =
                 unreadMessages > 9 ? '9+' : unreadMessages;
         }
+
         // Obtener ubicación del usuario
         function getUserLocation() {
             if (navigator.geolocation) {
@@ -1505,7 +2017,8 @@
             document.getElementById('lng').textContent = lng.toFixed(6);
 
             // Centrar mapa en la nueva ubicación
-            map.setView([lat, lng], 16);
+            map.setCenter([lng, lat]);
+            map.setZoom(16);
 
             // Agregar/actualizar marcador del usuario actual
             addOrUpdateMarker(currentUser, currentUser.type);
@@ -1522,80 +2035,6 @@
 
             map.getContainer().style.cursor = 'crosshair';
             showNotification('Haz click en el mapa para seleccionar tu destino', 'info');
-        }
-
-        // Establecer destino
-        function setDestination(lat, lng) {
-            destinationCoords = { lat, lng };
-
-            // Remover marcador anterior si existe
-            if (destinationMarker) {
-                map.removeLayer(destinationMarker);
-            }
-
-            // Crear marcador de destino
-            const iconHtml = '<div class="marker-pin destination-marker"></div>';
-            const customIcon = L.divIcon({
-                html: iconHtml,
-                className: 'custom-div-icon',
-                iconSize: [30, 30],
-                iconAnchor: [15, 30]
-            });
-
-            destinationMarker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
-            destinationMarker.bindPopup('<strong>🎯 Tu destino</strong>').openPopup();
-
-            // Dibujar ruta
-            drawRoute();
-
-            // Actualizar UI
-            selectingDestination = false;
-            map.getContainer().style.cursor = '';
-            document.getElementById('destinationSelector').classList.remove('active');
-            document.getElementById('destinationSelector').innerHTML =
-                '<p>✅ <strong>Destino seleccionado</strong></p>';
-
-            updateFABs();
-        }
-
-        // Dibujar ruta
-        function drawRoute() {
-            // Remover ruta anterior si existe
-            if (routeControl) {
-                map.removeControl(routeControl);
-            }
-
-            routeControl = L.Routing.control({
-                waypoints: [
-                    L.latLng(currentUser.lat, currentUser.lng),
-                    L.latLng(destinationCoords.lat, destinationCoords.lng)
-                ],
-                routeWhileDragging: false,
-                addWaypoints: false,
-                createMarker: function () { return null; }, // No crear marcadores adicionales
-                lineOptions: {
-                    styles: [{ color: '#764ba2', weight: 4, opacity: 0.7 }]
-                }
-            }).on('routesfound', function (e) {
-                const routes = e.routes;
-                const summary = routes[0].summary;
-
-                // Actualizar información de ruta
-                document.getElementById('routeInfo').style.display = 'block';
-                document.getElementById('routeDistance').textContent =
-                    (summary.totalDistance / 1000).toFixed(2) + ' km';
-                document.getElementById('routeDuration').textContent =
-                    Math.round(summary.totalTime / 60) + ' min';
-
-                // Ajustar vista del mapa
-                const bounds = L.latLngBounds([
-                    [currentUser.lat, currentUser.lng],
-                    [destinationCoords.lat, destinationCoords.lng]
-                ]);
-                map.fitBounds(bounds, { padding: [50, 50] });
-            }).addTo(map);
-
-            updateFABs();
         }
 
         // Confirmar y enviar solicitud
@@ -1615,7 +2054,7 @@
                 lng: currentUser.lng,
                 destinationLat: destinationCoords.lat,
                 destinationLng: destinationCoords.lng,
-                destination: destination || 'Destino seleccionado en el mapa',
+                destination: destinationInfo?.name || destination || 'Destino seleccionado en el mapa',
                 description: description,
                 timestamp: Date.now(),
                 status: 'waiting'
@@ -1638,7 +2077,7 @@
             const maxDistance = 2; // km
 
             markers.forEach((marker, markerId) => {
-                const markerData = marker.options.userData;
+                const markerData = marker.userData;
                 if (markerData && markerData.type === 'driver') {
                     const distance = calculateDistance(
                         currentUser.lat, currentUser.lng,
@@ -1646,7 +2085,11 @@
                     );
 
                     if (distance <= maxDistance) {
-                        marker.setIcon(createPulsingIcon('driver'));
+                        // Agregar efecto visual
+                        const markerEl = marker.getElement();
+                        if (markerEl) {
+                            markerEl.classList.add('pulse');
+                        }
 
                         // Notificar al conductor
                         const notification = {
@@ -1660,39 +2103,6 @@
                     }
                 }
             });
-        }
-
-        // Crear icono con efecto de pulso
-        function createPulsingIcon(type) {
-            const iconClass = type === 'client' ? 'client-marker' : 'driver-marker';
-            const iconHtml = `<div class="marker-pin ${iconClass} pulse"></div>`;
-
-            return L.divIcon({
-                html: iconHtml,
-                className: 'custom-div-icon',
-                iconSize: [30, 30],
-                iconAnchor: [15, 30]
-            });
-        }
-
-        // Limpiar ruta
-        function clearRoute() {
-            if (routeControl) {
-                map.removeControl(routeControl);
-                routeControl = null;
-            }
-
-            if (destinationMarker) {
-                map.removeLayer(destinationMarker);
-                destinationMarker = null;
-            }
-
-            destinationCoords = null;
-            document.getElementById('routeInfo').style.display = 'none';
-            document.getElementById('destinationSelector').innerHTML =
-                '<p>📍 <strong>Click en el mapa para seleccionar destino</strong></p>';
-
-            updateFABs();
         }
 
         // Enviar disponibilidad del conductor
@@ -1741,7 +2151,7 @@
 
                 currentRequest = null;
                 currentUser.status = 'waiting';
-                clearRoute();
+                clearDestination();
                 updateUI();
                 updateFABs();
 
@@ -1813,7 +2223,7 @@
                 lng: currentUser.lng,
                 destinationLat: destinationCoords?.lat,
                 destinationLng: destinationCoords?.lng,
-                destination: destination || 'Destino seleccionado en el mapa',
+                destination: destinationInfo?.name || destination || 'Destino seleccionado en el mapa',
                 description: document.getElementById('description').value.trim(),
                 driverLat: driverData.lat,
                 driverLng: driverData.lng,
@@ -1850,35 +2260,6 @@
             addSystemMessage(`Has solicitado servicio al conductor. Puedes chatear mientras esperas respuesta.`);
         }
 
-        // Dibujar ruta asignada (para conductor)
-        function drawAssignedRoute(clientLocation, destination) {
-            if (routeControl) {
-                map.removeControl(routeControl);
-            }
-
-            const waypoints = [
-                L.latLng(currentUser.lat, currentUser.lng),
-                L.latLng(clientLocation.lat, clientLocation.lng)
-            ];
-
-            if (destination) {
-                waypoints.push(L.latLng(destination.lat, destination.lng));
-            }
-
-            routeControl = L.Routing.control({
-                waypoints: waypoints,
-                routeWhileDragging: false,
-                addWaypoints: false,
-                createMarker: function () { return null; },
-                lineOptions: {
-                    styles: [{ color: '#28a745', weight: 5, opacity: 0.7 }]
-                }
-            }).on('routesfound', function (e) {
-                const bounds = L.latLngBounds(waypoints);
-                map.fitBounds(bounds, { padding: [50, 50] });
-            }).addTo(map);
-        }
-
         // Publicar mensaje MQTT
         function publishMessage(topic, data) {
             if (mqttClient && mqttClient.isConnected()) {
@@ -1898,112 +2279,93 @@
 
             // Remover marcador existente si existe
             if (markers.has(markerId)) {
-                map.removeLayer(markers.get(markerId));
+                markers.get(markerId).remove();
             }
 
             // Determinar clase CSS según el tipo
             let markerClass = '';
+            let markerIcon = '';
+
             if (markerId === currentUser.id) {
-                markerClass = 'my-marker';
+                markerClass = 'marker-user';
+                markerIcon = '👤';
             } else if (type === 'client') {
-                markerClass = 'client-marker';
+                markerClass = 'marker-client';
+                markerIcon = '🙋';
             } else if (type === 'driver') {
-                markerClass = 'driver-marker';
+                markerClass = 'marker-driver';
+                markerIcon = '🏍';
             }
 
-            // Crear icono personalizado
-            const iconHtml = `
-                <div class="marker-icon ${markerClass}">
-                    <div class="orientation-arrow"></div>
-                </div>
-            `;
-
-            const customIcon = L.divIcon({
-                html: iconHtml,
-                className: 'custom-div-icon',
-                iconSize: [40, 55], // Tamaño mayor para incluir la flecha
-                iconAnchor: [20, 55], // El ancla en la punta de la flecha
-                popupAnchor: [0, -55] // Posición del popup arriba del marcador
-            });
-
-            // Crear marcador
-            const marker = L.marker([data.lat, data.lng], {
-                icon: customIcon,
-                userData: { ...data, type }
-            }).addTo(map);
+            // Crear elemento del marcador
+            const el = document.createElement('div');
+            el.className = `mapbox-marker ${markerClass}`;
+            el.innerHTML = markerIcon;
 
             // Crear popup con información
             let popupContent = `
-    <div style="min-width: 200px;">
-        <h4>${type === 'client' ? '🙋‍♂️ Cliente' : '🏍️ Mototaxista'}</h4>
-             <p><strong>ID:</strong> ${data && data.userId ? data.userId.substring(0, 8) : 'N/A'}</p>
-
-
-        <p><strong>Hora:</strong> ${new Date(data.timestamp).toLocaleTimeString()}</p>
-`;
+                <div style="min-width: 200px;">
+                    <h4>${type === 'client' ? '🙋‍♂️ Cliente' : '🏍️ Mototaxista'}</h4>
+                    <p><strong>ID:</strong> ${data.userId ? data.userId.substring(0, 8) : 'N/A'}</p>
+                    <p><strong>Hora:</strong> ${new Date(data.timestamp).toLocaleTimeString()}</p>
+            `;
 
             if (type === 'client') {
                 popupContent += `
-        ${data.destination ? `<p><strong>Destino:</strong> ${data.destination}</p>` : ''}
-        ${data.description ? `<p><strong>Detalles:</strong> ${data.description}</p>` : ''}
-        <div style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
-            <button onclick="acceptClientRequest('${data.userId}')"
-                style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-                ✅ Aceptar
-            </button>
-            <button onclick="initiateContact('${data.userId}', 'client')"
-                style="background: #17a2b8; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-                💬 Chatear
-            </button>
-
-        </div>
-    `;
+                    ${data.destination ? `<p><strong>Destino:</strong> ${data.destination}</p>` : ''}
+                    ${data.description ? `<p><strong>Detalles:</strong> ${data.description}</p>` : ''}
+                    <div style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
+                        <button onclick="acceptClientRequest('${data.userId}')"
+                            style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                            ✅ Aceptar
+                        </button>
+                        <button onclick="initiateContact('${data.userId}', 'client')"
+                            style="background: #17a2b8; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                            💬 Chatear
+                        </button>
+                    </div>
+                `;
             } else if (type === 'driver') {
-                // Contenido para conductores (mantener el existente)
                 popupContent += `
-        ${data.description ? `<p><strong>Descripción:</strong> ${data.description}</p>` : ''}
-        ${data.price ? `<p><strong>Precio:</strong> S/ ${data.price}</p>` : ''}
-    `;
-            }
-
-            popupContent += '</div>';
-            if (type === 'client' && data.destination) {
-                popupContent += `<p><strong>Destino:</strong> ${data.destination}</p>`;
-            }
-
-            if (data.description) {
-                popupContent += `<p><strong>Descripción:</strong> ${data.description}</p>`;
-            }
-
-            if (type === 'driver' && data.price) {
-                popupContent += `<p><strong>Precio:</strong> S/ ${data.price}</p>`;
+                    ${data.description ? `<p><strong>Descripción:</strong> ${data.description}</p>` : ''}
+                    ${data.price ? `<p><strong>Precio:</strong> S/ ${data.price}</p>` : ''}
+                `;
             }
 
             // Botón de contacto para todos los usuarios excepto uno mismo
             if (currentUser.id !== data.userId) {
                 popupContent += `
-                    <button onclick="initiateContact('${data.userId}', '${type}')" class="contact-btn">
+                    <button onclick="initiateContact('${data.userId}', '${type}')"
+                        style="background: #17a2b8; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 4px;">
                         💬 Contactar
                     </button>
                 `;
             }
 
             popupContent += '</div>';
-            marker.bindPopup(popupContent);
+
+            // Crear marcador
+            const marker = new mapboxgl.Marker(el)
+                .setLngLat([data.lng, data.lat])
+                .setPopup(new mapboxgl.Popup().setHTML(popupContent))
+                .addTo(map);
+
+            // Guardar datos del usuario en el marcador
+            marker.userData = { ...data, type };
 
             // Guardar referencia del marcador
             markers.set(markerId, marker);
 
             // Si es el usuario actual, abrir popup automáticamente
             if (markerId === currentUser.id) {
-                marker.openPopup();
+                marker.togglePopup();
             }
         }
 
         // Remover marcador
         function removeMarker(markerId) {
             if (markers.has(markerId)) {
-                map.removeLayer(markers.get(markerId));
+                markers.get(markerId).remove();
                 markers.delete(markerId);
             }
         }
@@ -2394,7 +2756,7 @@
         function highlightRequest(requestData) {
             const marker = markers.get(requestData.userId);
             if (marker) {
-                marker.openPopup();
+                marker.togglePopup();
                 // Agregar efecto visual temporal
                 const element = marker.getElement();
                 if (element) {
@@ -2416,15 +2778,18 @@
 
             // Limpiar mapa
             clearRoute();
+            clearDestination();
 
             // Recargar marcadores
             markers.forEach((marker, markerId) => {
                 if (markerId !== currentUser.id) {
-                    map.removeLayer(marker);
+                    marker.remove();
                 }
             });
             markers.clear();
-            markers.set(currentUser.id, markers.get(currentUser.id));
+
+            // Volver a agregar marcador del usuario
+            addOrUpdateMarker(currentUser, currentUser.type);
 
             updateUI();
             updateFABs();
@@ -2458,10 +2823,12 @@
 
             // Deshabilitar controles durante viaje
             if (currentUser.status === 'in_trip' || currentUser.status === 'requesting') {
+                document.getElementById('destinationSearch').disabled = true;
                 document.getElementById('destination').disabled = true;
                 document.getElementById('description').disabled = true;
                 document.getElementById('price').disabled = true;
             } else {
+                document.getElementById('destinationSearch').disabled = false;
                 document.getElementById('destination').disabled = false;
                 document.getElementById('description').disabled = false;
                 document.getElementById('price').disabled = false;
@@ -2590,8 +2957,10 @@
                 mqttClient.disconnect();
             }
         });
+
+        // Funciones globales para compatibilidad
+        window.clearDestination = clearDestination;
     </script>
-    <script src="./android.js"></script>
 </body>
 
 </html>

@@ -1,7 +1,16 @@
 <?php
-use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
 
-Route::middleware('auth:api')->get('/user', function (FacadesRequest $request) {
-    return $request->user();
+
+// Rutas públicas
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+
+// Rutas protegidas
+Route::middleware('auth:api')->group(function () {
+    Route::get('profile', [AuthController::class, 'profile']);
+    Route::put('profile', [AuthController::class, 'updateProfile']);
+    Route::post('register-driver', [AuthController::class, 'registerDriver']);
+    Route::post('logout', [AuthController::class, 'logout']);
 });
